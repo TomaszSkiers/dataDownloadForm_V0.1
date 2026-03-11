@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/mode-toogle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +25,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pl" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col bg-background font-sans antialiased`}
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {/* HEADER */}
+          <header className="border border-b-chart-5 sticky top-0 z-50 w-full border-b bg-background max-w-5xl mx-auto">
+            <div className="max-w-5xl mx-auto flex h-16 items-center justify-between px-8">
+              <div className="font-bold text-xl tracking-tight">E-Forms</div>
+              <ModeToggle />
+            </div>
+          </header>
+          {/* CONTENT */}
+          <main className=" border flex-1 flex flex-col container mx-auto max-w-5xl py-6 px-8">{children}</main>
+          {/* FOOTER */}
+          <footer>
+            <div className=" border-t-chart-5 border max-w-5xl mx-auto flex flex-col items-center justify-between gap-4 px-8 py-4 md:flex-row">
+              <p className="text-sm text-muted-foreground">
+                &copy; 2026 E-Forms. Zbudowano na Ubuntu z Next.js.
+              </p>
+            </div>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );
