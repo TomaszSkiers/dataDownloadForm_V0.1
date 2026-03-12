@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { get, set, del } from 'idb-keyval';
 import { Technician, TechnicianSchema } from '../../constans/initialData';
 
+
 // Pomocnik do obsługi asynchronicznego IndexedDB
 // Konfiguracja IndexedDB z bezpiecznym typowaniem
 const idbStorage = {
@@ -24,6 +25,7 @@ interface ViewState {
   setActiveView: (view: string) => void;
   setTechnicians: (technicians: Technician[]) => void; // Zostawiamy do testów
   addTechnician: (technician: Technician) => void;
+  updateTechnician: (technician: Technician) => void;
   removeTechnician: (id: string) => void;
 }
 
@@ -38,6 +40,10 @@ export const useViewStore = create<ViewState>()(
       
       addTechnician: (newTech) => set((state) => ({
         techniciansList: [...state.techniciansList, newTech]
+      })),
+
+      updateTechnician: (updatedTech) => set((state) => ({
+        techniciansList: state.techniciansList.map((t) => t.id === updatedTech.id ? updatedTech : t)
       })),
 
       removeTechnician: (id) => set((state) => ({
