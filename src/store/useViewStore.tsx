@@ -1,8 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { get, set, del } from 'idb-keyval';
-import { Technician, TechnicianSchema } from '../../constans/initialData';
-
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { get, set, del } from "idb-keyval";
+import { Technician, TechnicianSchema } from "../../constans/initialData";
 
 // Pomocnik do obsługi asynchronicznego IndexedDB
 // Konfiguracja IndexedDB z bezpiecznym typowaniem
@@ -34,49 +33,71 @@ interface ViewState {
 export const useViewStore = create<ViewState>()(
   persist(
     (set) => ({
-      activeView: 'power',
+      activeView: "power",
       techniciansList: [],
 
       setActiveView: (view) => set({ activeView: view }),
       setTechnicians: (list) => set({ techniciansList: list }),
-      
-      addTechnician: (newTech) => set((state) => ({
-        techniciansList: [...state.techniciansList, newTech]
-      })),
 
-      updateTechnician: (updatedTech) => set((state) => ({
-        techniciansList: state.techniciansList.map((t) => t.id === updatedTech.id ? updatedTech : t)
-      })),
+      addTechnician: (newTech) =>
+        set((state) => ({
+          techniciansList: [...state.techniciansList, newTech],
+        })),
 
-      removeTechnician: (id) => set((state) => ({
-        techniciansList: state.techniciansList.filter((t) => t.id !== id)
-      })),
+      updateTechnician: (updatedTech) =>
+        set((state) => ({
+          techniciansList: state.techniciansList.map((t) =>
+            t.id === updatedTech.id ? updatedTech : t,
+          ),
+        })),
+
+      removeTechnician: (id) =>
+        set((state) => ({
+          techniciansList: state.techniciansList.filter((t) => t.id !== id),
+        })),
     }),
     {
-      name: 'workshop-technicians-storage',
+      name: "workshop-technicians-storage",
       storage: createJSONStorage(() => idbStorage),
-      
+
       // TA CZĘŚĆ ZABEZPIECZA PRZED ŚMIECIAMI:
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error("Błąd podczas odtwarzania stanu:", error);
+          return;
+        }
+
         if (state) {
           // Walidujemy całą listę zebraną z bazy
           const validatedList = state.techniciansList.filter((tech) => {
             const result = TechnicianSchema.safeParse(tech);
             if (!result.success) {
-              console.error("Wykryto uszkodzone dane technika, pomijam:", result.error);
-              return false; // Usuwa rekord z widoku, jeśli jest błędny
+              console.error(
+                "Wykryto uszkodzone dane technika, pomijam:",
+                result.error,
+              );
+              return false;
             }
             return true;
           });
-          
-          // Nadpisujemy stan tylko "czystymi" danymi
-          state.techniciansList = validatedList;
+
+          // Jeśli usunęliśmy jakieś śmieci, aktualizujemy stan przez dedykowaną akcję
+          if (validatedList.length !== state.techniciansList.length) {
+            console.log(
+              `🧹 Usunięto ${state.techniciansList.length - validatedList.length} uszkodzonych rekordów`,
+            );
+
+            // ✅ POPRAWNIE: używamy akcji setTechnicians do aktualizacji stanu
+            useViewStore.getState().setTechnicians(validatedList);
+
+            // persist SAM automatycznie zapisze do IndexedDB!
+          }
         }
       },
-      
-      partialize: (state): Pick<ViewState, 'techniciansList'> => ({ 
-        techniciansList: state.techniciansList 
+
+      partialize: (state): Pick<ViewState, "techniciansList"> => ({
+        techniciansList: state.techniciansList,
       }),
-    }
-  )
+    },
+  ),
 );
