@@ -129,7 +129,7 @@ import { z } from "zod";
 // Definicja schematu dla pojedynczego technika
 export const TechnicianSchema = z.object({
   id: z.string().uuid(),
-  fullName: z.string().min(3, "Imię i nazwisko jest wymagane"),
+  fullName: z.string().min(3, "Imię i nazwisko jest wymagane").max(30, 'max 30 znaków'),
   cardNumber: z.string().regex(/^[A-Z0-9]+$/, "Nieprawidłowy format numeru karty"),
 });
 

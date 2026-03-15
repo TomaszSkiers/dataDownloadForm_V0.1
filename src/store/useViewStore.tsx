@@ -7,14 +7,16 @@ import { Technician, TechnicianSchema } from '../../constans/initialData';
 // Pomocnik do obsługi asynchronicznego IndexedDB
 // Konfiguracja IndexedDB z bezpiecznym typowaniem
 const idbStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    const value = await get(name);
-    return value || null;
+  async getItem(name: string): Promise<string | null> {
+    const value = await get<string>(name);
+    return value ?? null;
   },
-  setItem: async (name: string, value: unknown): Promise<void> => {
+
+  async setItem(name: string, value: string): Promise<void> {
     await set(name, value);
   },
-  removeItem: async (name: string): Promise<void> => {
+
+  async removeItem(name: string): Promise<void> {
     await del(name);
   },
 };
@@ -23,7 +25,7 @@ interface ViewState {
   activeView: string;
   techniciansList: Technician[];
   setActiveView: (view: string) => void;
-  setTechnicians: (technicians: Technician[]) => void; // Zostawiamy do testów
+  setTechnicians: (technicians: Technician[]) => void; // Zostawiam do testów
   addTechnician: (technician: Technician) => void;
   updateTechnician: (technician: Technician) => void;
   removeTechnician: (id: string) => void;

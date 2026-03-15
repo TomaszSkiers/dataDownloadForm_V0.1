@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuidv4 } from "uuid";
 
 import { useViewStore } from "@/store/useViewStore";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,12 +19,15 @@ import { Technician, TechnicianSchema } from "../../../../constans/initialData";
 
 interface TechnicianFormProps {
   initialData?: Technician | null; // Dane do edycji
-  onSuccess?: () => void;         // Akcja po zapisie
+  onSuccess?: () => void; // Akcja po zapisie
 }
 
-export const TechnicianForm = ({ initialData, onSuccess }: TechnicianFormProps) => {
+export const TechnicianForm = ({
+  initialData,
+  onSuccess,
+}: TechnicianFormProps) => {
   const { addTechnician, updateTechnician } = useViewStore();
-  
+
   // Tryb edycji aktywuje się, gdy mamy initialData
   const isEditMode = !!initialData;
 
@@ -62,8 +65,8 @@ export const TechnicianForm = ({ initialData, onSuccess }: TechnicianFormProps) 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <h2 className="text-lg font-bold">
-          {isEditMode ? "Edytuj dane technika" : "Dodaj nowego technika"}
+        <h2 className="text-sm text-muted-foreground">
+          {isEditMode ? "Edytujesz dane technika" : "Dodajesz nowego technika"}
         </h2>
 
         <FormField
@@ -73,7 +76,11 @@ export const TechnicianForm = ({ initialData, onSuccess }: TechnicianFormProps) 
             <FormItem>
               <FormLabel>Imię i Nazwisko</FormLabel>
               <FormControl>
-                <Input placeholder="np. Jan Kowalski" {...field} />
+                <Input
+                  placeholder="np. Jan Kowalski"
+                  maxLength={30}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,7 +101,7 @@ export const TechnicianForm = ({ initialData, onSuccess }: TechnicianFormProps) 
           )}
         />
 
-        <div className="flex gap-2 pt-2">
+        {/* <div className="flex gap-2 pt-2">
           <Button type="submit" className="flex-1">
             {isEditMode ? "Zapisz zmiany" : "Dodaj technika"}
           </Button>
@@ -104,8 +111,42 @@ export const TechnicianForm = ({ initialData, onSuccess }: TechnicianFormProps) 
               Anuluj
             </Button>
           )}
-        </div>
+        </div> */}
+        <FormButtons
+          isEditMode={isEditMode}
+          onSuccess={onSuccess}
+        ></FormButtons>
       </form>
     </Form>
   );
 };
+
+import { memo } from "react";
+
+// Teraz opakowujemy w memo
+const FormButtons = memo(
+  ({
+    isEditMode,
+    onSuccess,
+  }: {
+    isEditMode: boolean;
+    onSuccess?: () => void;
+  }) => {
+    return (
+      <div className="flex gap-2 pt-2">
+        <Button type="submit">
+          {isEditMode ? "Zapisz zmiany" : "Dodaj technika"}
+        </Button>
+
+        {onSuccess && (
+          <Button type="button" variant="outline" onClick={onSuccess}>
+            Anuluj
+          </Button>
+        )}
+      </div>
+    );
+  },
+);
+
+// Dodajemy displayName dla lepszego debugowania
+FormButtons.displayName = "FormButtons";

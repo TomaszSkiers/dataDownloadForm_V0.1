@@ -34,7 +34,7 @@ export default function TechniciansList() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-background">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
         <CardTitle className="text-2xl font-bold">Lista techników</CardTitle>
 
@@ -45,12 +45,12 @@ export default function TechniciansList() {
               + Dodaj technika
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
+          <DialogContent className="">
+            <DialogHeader >
               <DialogTitle>Nowy pracownik</DialogTitle>
-              <DialogDescription>
+              {/* <DialogDescription>
                 Wprowadź dane nowego technika, aby dodać go do systemu.
-              </DialogDescription>
+              </DialogDescription> */}
             </DialogHeader>
 
             <TechnicianForm onSuccess={() => setIsAddDialogOpen(false)} />
@@ -62,7 +62,7 @@ export default function TechniciansList() {
         {techniciansList.map((tech: Technician) => (
           <div
             key={tech.id}
-            className="flex justify-between border p-3 rounded-md bg-accent"
+            className="flex justify-between border p-3 rounded-md "
           >
             <div className="flex flex-col">
               <span>{tech.fullName}</span>
@@ -76,6 +76,7 @@ export default function TechniciansList() {
               <Button
                 variant="ghost"
                 size="icon"
+                className="border hover:text-chart-1"
                 onClick={() => setEditingTechnician(tech)}
               >
                 <Edit2 className="w-4 h-4" />
@@ -89,7 +90,7 @@ export default function TechniciansList() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:text-destructive"
+                  className="border hover:text-destructive"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

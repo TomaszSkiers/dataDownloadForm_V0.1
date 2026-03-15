@@ -25,7 +25,7 @@ export default function LeftFormButtons({ className }: Props) {
           className={cn(
             'cursor-pointer transition-all hover:bg-accent select-none p-0 min-h-25',
             activeView === button.id
-            ? 'border-2 border-destructive'
+            ? 'border-2 border-destructive bg-accent'
             : 'border-2' 
           )}
         >
