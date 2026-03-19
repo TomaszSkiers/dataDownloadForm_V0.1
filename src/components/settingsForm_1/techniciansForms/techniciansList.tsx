@@ -3,28 +3,26 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useViewStore } from "@/store/useViewStore";
-
 import { Technician } from "../../../../constans/initialData";
 import { Button } from "@/components/ui/button";
-import { techniciansMock } from "../../../../constans/initialData";
 import { Edit2, Trash2 } from "lucide-react";
-
 import { ConfirmDialog } from "../confirmDialog";
-
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { TechnicianForm } from "./addTechnician";
 import { useState } from "react";
+import { useTechniciansStore } from "@/store/useTechnicianStorage";
 
 export default function TechniciansList() {
-  const { techniciansList, setTechnicians, removeTechnician } = useViewStore();
+  const techniciansList = useTechniciansStore((store) => store.technicianList);
+  const removeTechnician = useTechniciansStore(
+    (store) => store.removeTechnician,
+  );
 
   // Przechowujemy cały obiekt technika, którego edytujemy
   const [editingTechnician, setEditingTechnician] = useState<Technician | null>(
@@ -46,11 +44,8 @@ export default function TechniciansList() {
             </Button>
           </DialogTrigger>
           <DialogContent className="">
-            <DialogHeader >
+            <DialogHeader>
               <DialogTitle>Nowy pracownik</DialogTitle>
-              {/* <DialogDescription>
-                Wprowadź dane nowego technika, aby dodać go do systemu.
-              </DialogDescription> */}
             </DialogHeader>
 
             <TechnicianForm onSuccess={() => setIsAddDialogOpen(false)} />
@@ -116,15 +111,6 @@ export default function TechniciansList() {
           )}
         </DialogContent>
       </Dialog>
-
-      <div className="flex-1"></div>
-
-      <Button
-        className="mx-20 mb-4"
-        onClick={() => setTechnicians(techniciansMock)}
-      >
-        Zapisz dane testowe
-      </Button>
     </Card>
   );
 }

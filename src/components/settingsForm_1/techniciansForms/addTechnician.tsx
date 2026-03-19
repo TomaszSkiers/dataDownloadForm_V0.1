@@ -26,7 +26,9 @@ export const TechnicianForm = ({
   initialData,
   onSuccess,
 }: TechnicianFormProps) => {
-  const { addTechnician, updateTechnician } = useViewStore();
+  // const { addTechnician, updateTechnician } = useViewStore();
+  const addTechnician = useTechniciansStore((store) => store.addTechnician)
+  const updateTechnician = useTechniciansStore((store) => store.updateTechnician)
 
   // Tryb edycji aktywuje się, gdy mamy initialData
   const isEditMode = !!initialData;
@@ -122,6 +124,7 @@ export const TechnicianForm = ({
 };
 
 import { memo } from "react";
+import { useTechniciansStore } from "@/store/useTechnicianStorage";
 
 // Teraz opakowujemy w memo
 const FormButtons = memo(
