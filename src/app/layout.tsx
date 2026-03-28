@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toogle";
+import { Toaster } from "@/components/ui/sonner";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,21 +35,32 @@ export default function RootLayout({
           {/* HEADER */}
           <header className="border border-b-chart-5 sticky top-0 z-50 w-full border-b bg-background max-w-5xl mx-auto">
             <div className="max-w-5xl mx-auto flex h-16 items-center justify-between px-8">
-              <div className="font-bold text-xl tracking-tight">E-Forms</div>
+              {/* Link do strony głównej */}
+              <Link
+                href="/"
+                className="font-bold text-xl tracking-wider hover:opacity-80 transition-opacity"
+              >
+                e-formularze
+              </Link>
+
               <ModeToggle />
             </div>
           </header>
           {/* CONTENT */}
-          <main className=" border flex-1 flex flex-col container mx-auto max-w-5xl py-6 px-8">{children}</main>
+          <main className=" border flex-1 flex flex-col container mx-auto max-w-5xl py-2 sm:py-6 sm:px-8">
+            {children}
+          </main>
           {/* FOOTER */}
           <footer>
             <div className=" border-t-chart-5 border max-w-5xl mx-auto flex flex-col items-center justify-between gap-4 px-8 py-4 md:flex-row">
               <p className="text-sm text-muted-foreground">
-                &copy; 2026 E-Forms. Zbudowano na Ubuntu z Next.js.
+                Potrzebujesz aplikacji dla swojej firmy, zrobię ją dla Ciebie, kliknij w <Link href='' className="font-bold underline">link</Link> do mojego portfolio.
               </p>
+              
             </div>
           </footer>
         </ThemeProvider>
+        <Toaster richColors closeButton position="top-center" />
       </body>
     </html>
   );

@@ -3,13 +3,14 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Technician } from "../../../../constans/initialData";
+import { Technician } from "../../../../constants/initialData";
 import { Button } from "@/components/ui/button";
 import { Edit2, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "../confirmDialog";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -32,7 +33,7 @@ export default function TechniciansList() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   return (
-    <Card className="h-full bg-background">
+    <Card className=" bg-background absolute inset-0 overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
         <CardTitle className="text-2xl font-bold">Lista techników</CardTitle>
 
@@ -53,7 +54,7 @@ export default function TechniciansList() {
         </Dialog>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-3">
+      <CardContent className="flex flex-col gap-3  top-20 bottom-5 overflow-y-auto">
         {techniciansList.map((tech: Technician) => (
           <div
             key={tech.id}
@@ -102,6 +103,7 @@ export default function TechniciansList() {
       >
         <DialogContent>
           <DialogTitle>Edytuj Technika</DialogTitle>
+          <DialogDescription></DialogDescription>
           {editingTechnician && (
             <TechnicianForm
               key={editingTechnician.id} // Klucz zapewnia reset formularza

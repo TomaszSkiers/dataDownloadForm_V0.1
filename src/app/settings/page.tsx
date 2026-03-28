@@ -1,6 +1,6 @@
 import LeftFormButtons from "@/components/settingsForm_1/leftButtons";
 import SettingsContextContainer from "@/components/settingsForm_1/settingsContextContainer";
-import TopFormsButtons from "@/components/settingsForm_1/topFormButtons";
+// import TopFormsButtons from "@/components/settingsForm_1/topFormButtons";
 
 /**
  * * /settings
@@ -12,12 +12,12 @@ import TopFormsButtons from "@/components/settingsForm_1/topFormButtons";
 
 export default function Settings() {
   return (
-    <main className="flex flex-1 flex-col">
-      <TopFormsButtons className="mb-5" />
-      <div className="grid grid-cols-[20%_1fr] flex-1 gap-5">
-        <LeftFormButtons className="" />
-        <SettingsContextContainer className="border rounded-xl" />
-      </div>
+    <main className="flex flex-1 flex-col gap-5 ">
+      {/* <TopFormsButtons className="mb-5 " /> */}
+      
+        <LeftFormButtons className="flex gap-2 sm:gap-5 " />
+        <SettingsContextContainer className="rounded-xl flex-1 relative " />
+      
     </main>
   );
 }

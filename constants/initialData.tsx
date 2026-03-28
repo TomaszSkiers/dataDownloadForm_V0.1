@@ -2,6 +2,8 @@
  * @fileoverview
  * ZMIENNE DO KONFIGURACJI APLIKACJI
  */
+import { z } from "zod";
+
 
 // =============================================================================
 // OBIEKT KONFIGURACJI PODSTAWOWYCH DANYCH O POJAZDACH
@@ -124,7 +126,6 @@ export const FORMS_BUTTONS_TOP: SettingsButtons[] = [
 // =============================================================
 // TESTOWY OBIEKT DLA LISTY TECHNIKOW
 // =============================================================
-import { z } from "zod";
 
 // Definicja schematu dla pojedynczego technika
 export const TechnicianSchema = z.object({
@@ -164,3 +165,15 @@ export const techniciansMock: Technician[] = [
   },
   
 ];
+
+// ===============================================================
+// SCHEMAT OBIEKTU WARSZTAT / OBJECT WORKSHOP SCHEMA 
+// ===============================================================
+
+export const WORKSHOP_SCHEMA = z.object({
+  id: z.string(),
+  name: z.string().min(3, 'Nazwa warsztatu jest wymagana, min 3 znaki').max(50, 'maksymalnie można wpisać 50 znaków'),
+  address: z.string().min(3, 'Adres jest wymagany, min 3 znaki').max(50, 'maksymalnie można wpisać 50 znaków')
+})
+
+export type WORKSHOP = z.infer<typeof WORKSHOP_SCHEMA>

@@ -5,7 +5,7 @@
 
 
 import { create } from 'zustand'
-import { Technician, TechnicianSchema } from '../../constans/initialData'
+import { Technician, TechnicianSchema } from '../../constants/initialData'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { idbStorage } from './idbStorage'
 

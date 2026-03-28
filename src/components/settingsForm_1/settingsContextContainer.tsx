@@ -2,10 +2,11 @@
 import { cn } from "@/lib/utils";
 import { useViewStore } from "@/store/useViewStore";
 import TechniciansList from "../settingsForm_1/techniciansForms/techniciansList";
-import WorkshopsList from "../settingsForm_1/workshopsForm/workshopsList"
+// import WorkshopsList from "./WORKSHOPS-FORM/workshopsList"
 import VehiclesList from "../settingsForm_1/vehiclesForms/vehiclesList";
 import ReasonsList from "../settingsForm_1/reasonsForm/reasonsList";
 import PowerOff from "./power/settingsPowerOff";
+import WorkshopList2 from "./WORKSHOP-FORM-2/workshopList2";
 
 interface Props {
   className?: string;
@@ -21,7 +22,7 @@ export default function SettingsContextContainer({ className }: Props) {
   return (
     <div className={cn("", className)}>
       {activeView === "technicy" && <TechniciansList />}
-      {activeView === "warsztaty" && <WorkshopsList />}
+      {activeView === "warsztaty" && <WorkshopList2 />}
       {activeView === "pojazdy" && <VehiclesList />}
       {activeView === "powody" && <ReasonsList />}
       {activeView === 'power' && <PowerOff />}

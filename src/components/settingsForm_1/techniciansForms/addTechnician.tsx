@@ -3,8 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuidv4 } from "uuid";
-
-import { useViewStore } from "@/store/useViewStore";
 import {
   Form,
   FormControl,
@@ -15,7 +13,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Technician, TechnicianSchema } from "../../../../constans/initialData";
+import {
+  Technician,
+  TechnicianSchema,
+} from "../../../../constants/initialData";
 
 interface TechnicianFormProps {
   initialData?: Technician | null; // Dane do edycji
@@ -26,9 +27,10 @@ export const TechnicianForm = ({
   initialData,
   onSuccess,
 }: TechnicianFormProps) => {
-  // const { addTechnician, updateTechnician } = useViewStore();
-  const addTechnician = useTechniciansStore((store) => store.addTechnician)
-  const updateTechnician = useTechniciansStore((store) => store.updateTechnician)
+  const addTechnician = useTechniciansStore((store) => store.addTechnician);
+  const updateTechnician = useTechniciansStore(
+    (store) => store.updateTechnician,
+  );
 
   // Tryb edycji aktywuje się, gdy mamy initialData
   const isEditMode = !!initialData;
@@ -103,17 +105,6 @@ export const TechnicianForm = ({
           )}
         />
 
-        {/* <div className="flex gap-2 pt-2">
-          <Button type="submit" className="flex-1">
-            {isEditMode ? "Zapisz zmiany" : "Dodaj technika"}
-          </Button>
-          
-          {onSuccess && (
-            <Button type="button" variant="outline" onClick={onSuccess}>
-              Anuluj
-            </Button>
-          )}
-        </div> */}
         <FormButtons
           isEditMode={isEditMode}
           onSuccess={onSuccess}
@@ -151,5 +142,4 @@ const FormButtons = memo(
   },
 );
 
-// Dodajemy displayName dla lepszego debugowania
 FormButtons.displayName = "FormButtons";

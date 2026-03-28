@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import { TechnicianSchema, Technician } from "../../constans/initialData";
+import { TechnicianSchema, Technician } from "../../constants/initialData";
 
 // Lista polskich imion i nazwisk
 const firstNames = [
-  "Jan", "Andrzej", "Piotr", "Krzysztof", "Tomasz", "Paweł", "Michał", 
+  "Jan", "Andrzej", "Piotr", "Krzysztof", "Tomasz", "Paweł", "Michał",
   "Adam", "Marek", "Grzegorz", "Robert", "Mateusz", "Maciej", "Sebastian",
   "Wojciech", "Rafał", "Jakub", "Łukasz", "Dariusz", "Mariusz"
 ];
 
 const lastNames = [
-  "Kowalski", "Wiśniewski", "Wójcik", "Kowalczyk", "Kamiński", 
+  "Kowalski", "Wiśniewski", "Wójcik", "Kowalczyk", "Kamiński",
   "Lewandowski", "Zieliński", "Woźniak", "Szymański", "Dąbrowski",
   "Kozłowski", "Jankowski", "Mazur", "Kwiatkowski", "Wojciechowski",
   "Krawczyk", "Piotrowski", "Grabowski", "Nowakowski", "Pawłowski",
@@ -20,12 +20,12 @@ const lastNames = [
 const generateCardNumber = (): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
-  
+
   for (let i = 0; i < 16; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     result += characters[randomIndex];
   }
-  
+
   return result;
 };
 
@@ -48,7 +48,7 @@ export const generateSingleTechnician = (): Technician => {
 
   // Walidacja przez Zod (dla bezpieczeństwa)
   const validatedTechnician = TechnicianSchema.parse(technicianData);
-  
+
   return validatedTechnician;
 };
 
