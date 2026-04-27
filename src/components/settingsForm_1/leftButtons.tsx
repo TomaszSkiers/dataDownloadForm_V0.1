@@ -16,7 +16,7 @@ export default function LeftFormButtons({ className }: Props) {
   const { activeView, setActiveView } = useViewStore();
 
   return (
-    <div className={cn("", className)}>
+    <div className={cn("mt-5 px-3 sm:px-0" , className)}>
       {SETTINGS_BUTTONS_LEFT.map((button) => (
         <Card
           key={button.id}
@@ -24,7 +24,7 @@ export default function LeftFormButtons({ className }: Props) {
             "cursor-pointer transition-all hover:bg-accent select-none flex-1 p-0",
             activeView === button.id
               ? "border-2 border-destructive bg-accent"
-              : "border-2",
+              : "border-2 border-border",
           )}
         >
           <CardHeader

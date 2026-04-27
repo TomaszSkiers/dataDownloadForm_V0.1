@@ -12,11 +12,11 @@ import SettingsContextContainer from "@/components/settingsForm_1/settingsContex
 
 export default function Settings() {
   return (
-    <main className="flex flex-1 flex-col gap-5 ">
+    <main className="flex flex-1 flex-col gap-5">
       {/* <TopFormsButtons className="mb-5 " /> */}
       
         <LeftFormButtons className="flex gap-2 sm:gap-5 " />
-        <SettingsContextContainer className="rounded-xl flex-1 relative " />
+        <SettingsContextContainer className=" flex-1 flex" />
       
     </main>
   );

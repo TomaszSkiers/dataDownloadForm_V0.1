@@ -47,7 +47,7 @@ export default function RootLayout({
             </div>
           </header>
           {/* CONTENT */}
-          <main className=" border flex-1 flex flex-col container mx-auto max-w-5xl py-2 sm:py-6 sm:px-8">
+          <main className=" sm:border flex-1 flex flex-col container mx-auto max-w-5xl sm:py-6 sm:px-8">
             {children}
           </main>
           {/* FOOTER */}

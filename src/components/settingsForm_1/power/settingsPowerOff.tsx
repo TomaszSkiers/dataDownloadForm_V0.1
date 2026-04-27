@@ -1,8 +1,8 @@
-import { PenOff, ArrowBigUp, Power } from "lucide-react";
+import { ArrowBigUp, Power } from "lucide-react";
 
 export default function PowerOff() {
   return (
-    <div className="flex flex-col absolute inset-0 items-center justify-center text-center tracking-wider border rounded-xl">
+    <div className="flex-1 flex flex-col items-center justify-center text-center tracking-wider border rounded-xl">
       <Power size={150} className="mb-10 text-chart-10" />
       <span>edycja ustaień wyłączona</span>
       <div className="flex gap-5">

@@ -5,7 +5,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Technician } from "../../../../constants/initialData";
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, PlusCircle, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "../confirmDialog";
 import {
   Dialog,
@@ -33,7 +33,7 @@ export default function TechniciansList() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   return (
-    <Card className=" bg-background absolute inset-0 overflow-hidden">
+    <Card className="flex-1 rounded-none ">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
         <CardTitle className="text-2xl font-bold">Lista techników</CardTitle>
 
@@ -41,7 +41,7 @@ export default function TechniciansList() {
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="px-4">
-              + Dodaj technika
+              <PlusCircle className=""/> <span className="hidden sm:block">dodaj technika</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="">
@@ -58,7 +58,7 @@ export default function TechniciansList() {
         {techniciansList.map((tech: Technician) => (
           <div
             key={tech.id}
-            className="flex justify-between border p-3 rounded-md "
+            className="flex justify-between border p-3 rounded-md bg-background"
           >
             <div className="flex flex-col">
               <span>{tech.fullName}</span>
