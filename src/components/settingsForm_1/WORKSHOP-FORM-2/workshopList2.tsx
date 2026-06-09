@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { Plus } from "lucide-react";
-import { generateRandomWorkshop } from "@/lib/generateMockWorkshop";
+// import { generateRandomWorkshop } from "@/lib/generateMockWorkshop";
 
 import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
 import {
@@ -44,30 +44,27 @@ import AddWorkshopDialog2 from "./addWorkshopDialog2";
 
 export default function WorkshopList2() {
   const workshopList = useWorkshopStore2((s) => s.workshopList);
-  const addWorkshop = useWorkshopStore2((s) => s.addWorkshop);
+  // const addWorkshop = useWorkshopStore2((s) => s.addWorkshop);
   const [open, setOpen] = useState(false);
   return (
     <Card className="flex-1 rounded-none border-b-0 sm:border-b">
       <CardHeader className="flex justify-between items-center">
         <CardTitle>Lista punktów serwisowych</CardTitle>
-        <Button
+        {/* <Button
           onClick={() => {
             addWorkshop(generateRandomWorkshop());
           }}
         >
           <Plus color="green" /> <span>dodaj losowy adres</span>
-        </Button>
+        </Button> */}
         <Button
           onClick={() => {
             setOpen(true);
           }}
         >
           <Plus color="blue" />
-          <span>dodaj adres</span>
+          <span>dodaj warsztat</span>
         </Button>
-        {/** tu zmiana na renderowanie warunkowe !!!! */}
-        {/* WorkshopList2.tsx */}
-        {open && <AddWorkshopDialog2 open={open} setOpen={setOpen} />}
       </CardHeader>
 
       <Separator />
@@ -75,7 +72,10 @@ export default function WorkshopList2() {
       <CardContent className="flex-1 relative">
         <div className="absolute inset-0 flex flex-col gap-3 overflow-auto ">
           {workshopList.length === 0 ? (
-            <div>brak techników w bazie danych</div>
+            <div className="mx-auto text-2xl font-extrabold text-center">
+              brak danych o warsztacie <br />{" "}
+              <span className="text-sm">kliknij dodaj warsztat</span>
+            </div>
           ) : (
             workshopList.map((workshop) => (
               <Card
@@ -98,20 +98,22 @@ export default function WorkshopList2() {
                 </div>
 
                 <div className="flex flex-col justify-center gap-5 p-4 md:flex-row">
+                  <EditServiceDialog object={workshop}>
+                    <Button size="sm">edytuj</Button>
+                  </EditServiceDialog>
                   <DeleteServiceDialog id={workshop.id}>
                     <Button size={"sm"} variant={"destructive"}>
                       Usuń
                     </Button>
                   </DeleteServiceDialog>
-                  <EdidServiceDialog object={workshop}>
-                    <Button size="sm">edytuj</Button>
-                  </EdidServiceDialog>
                 </div>
               </Card>
             ))
           )}
         </div>
       </CardContent>
+      
+      {open && <AddWorkshopDialog2 open={open} setOpen={setOpen} />}
     </Card>
   );
 }
@@ -123,7 +125,7 @@ interface EditWorkshopDialogProps {
   object: WORKSHOP;
 }
 
-function EdidServiceDialog({ children, object }: EditWorkshopDialogProps) {
+function EditServiceDialog({ children, object }: EditWorkshopDialogProps) {
   const save = useWorkshopStore2((state) => state.editWorkshop);
   const [open, setOpen] = useState(false);
 
@@ -161,7 +163,7 @@ function EdidServiceDialog({ children, object }: EditWorkshopDialogProps) {
                 <FormItem>
                   <FormLabel>NazwaWarsztatu</FormLabel>
                   <FormControl>
-                    <Input maxLength={30} {...field} />
+                    <Input maxLength={100} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,7 +177,7 @@ function EdidServiceDialog({ children, object }: EditWorkshopDialogProps) {
                 <FormItem>
                   <FormLabel>Adres warsztatu</FormLabel>
                   <FormControl>
-                    <Input maxLength={30} {...field} />
+                    <Input maxLength={100} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
