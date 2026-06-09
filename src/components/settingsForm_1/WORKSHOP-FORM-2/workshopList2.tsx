@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 
-import { Plus } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 // import { generateRandomWorkshop } from "@/lib/generateMockWorkshop";
 
 import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
@@ -62,7 +62,7 @@ export default function WorkshopList2() {
             setOpen(true);
           }}
         >
-          <Plus color="blue" />
+          <CirclePlus className="text-chart-1" />
           <span>dodaj warsztat</span>
         </Button>
       </CardHeader>
@@ -127,7 +127,7 @@ interface EditWorkshopDialogProps {
 
 function EditServiceDialog({ children, object }: EditWorkshopDialogProps) {
   const save = useWorkshopStore2((state) => state.editWorkshop);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // tu jest błąd to musi iść z głównego komponentu
 
   const form = useForm<WORKSHOP>({
     resolver: zodResolver(WORKSHOP_SCHEMA),

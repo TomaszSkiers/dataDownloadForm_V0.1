@@ -1,27 +1,39 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
-import { Truck, Fuel, Calendar, Info, Badge, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Vehicle, vehicleSchema } from "../../../../constants/initialData";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import z from "zod";
 
 export default function VehiclesList2() {
   const vehiclesList = useVehicalStorage2((state) => state.vehicleList);
+  const [openAddVehicleDialog, setOpenAddVehicleDialog] = useState(false);
 
   return (
     <Card className="flex-1 rounded-none border-b-0 sm:border-b ">
       <CardHeader className="flex justify-between items-center">
         <CardTitle>Lista pojazdów</CardTitle>
-        <Button>
-          <PlusCircle className="text-chart-7"></PlusCircle>
+        <Button
+          onClick={() => {
+            setOpenAddVehicleDialog(true);
+          }}
+        >
+          <PlusCircle className="text-chart-1"></PlusCircle>
           <span>dodaj pojazd</span>
         </Button>
       </CardHeader>
@@ -66,15 +78,129 @@ export default function VehiclesList2() {
                 </div>
                 <div className="flex flex-col justify-center gap-5 p-4 md:flex-row">
                   <Button size="sm">edytuj</Button>
-                  <Button size={'sm'} variant={'destructive'}>Usuń</Button>
+                  <Button size={"sm"} variant={"destructive"}>
+                    Usuń
+                  </Button>
                 </div>
               </Card>
             ))
           )}
         </div>
       </CardContent>
+
+      {/** add vehicle dialog */}
+      {openAddVehicleDialog && (
+        <AddVehicle
+          open={openAddVehicleDialog}
+          setOpen={() => {
+            setOpenAddVehicleDialog(false);
+          }}
+        />
+      )}
     </Card>
   );
 }
-//! poprawić ikonkę dodaj warsztat na kolor zielony i w kółeczku
-//! przemyśleć jak utworzyć okienko dialogowe dodaj pojazd
+
+// ================= add vehicle dialog =====================================
+
+//todo zrobić kolejne pola -> typ pojazdu i rodzaj pojazdu
+//* pozmieniać i initialData kategorie pojazdów na polskie
+//* zrobić listę wyboru kategorii w dodawaniu pojazdu
+
+
+interface addDialog {
+  open: boolean;
+  setOpen: () => void;
+}
+
+const VehicleFormValuesSchema = z.object({
+  id: z.string().uuid({ message: "Niepoprawny format ID" }),
+
+  name: z.string().min(1, { message: "Nazwa marki jest wymagana" }),
+
+  types: z
+    .string()
+    .min(1, { message: "Musisz podać przynajmniej jeden model" }),
+
+  category: z.string().min(1, { message: "Musisz podać typ pojazdu" }),
+});
+ type VehicleForm = z.infer<typeof VehicleFormValuesSchema>;
+
+
+function AddVehicle({ open, setOpen }: addDialog) {
+  const form = useForm<VehicleForm>({
+    resolver: zodResolver(VehicleFormValuesSchema),
+    defaultValues: {
+      id: uuidv4(),
+      name: "",
+      types: '', 
+      category: "nowy", //todo bez jednego znaki nie przechodzi walidacji
+    },
+  });
+
+  const onSubmit = (data: VehicleForm) => {
+    console.log(data)
+  }
+
+
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Dodawanie pojazdu</DialogTitle>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+            <FormField 
+              control={form.control}
+              name="name" //brand name
+              render={({field}) => {
+                return <FormItem>
+                  <FormLabel>Nazwa pojazdu</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>;
+              }}
+            />
+            <FormField 
+              control={form.control}
+              name="types" //brand type
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>typ pojazdu</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField 
+              control={form.control}
+              name='category' //brand category
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>kategoria pojazdu</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Zapisz</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ==========================================================================
