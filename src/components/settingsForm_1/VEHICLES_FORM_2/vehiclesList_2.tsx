@@ -12,22 +12,65 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Vehicle, vehicleSchema } from "../../../../constants/initialData";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import z from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Vehicle, vehicleSchema } from "../../../../constants/initialData";
+
+//!   --- mikrozadania -------------------------------------------------------
+//todo zrobić edycję pojazdu
+//todo wyeliminować redundancję w selectach
+//todo 1. dorobić pola formularza
+//todo 2. zastanowić się jak dodawać nowe typy pojazdu
+
+//* pozmieniać i initialData kategorie pojazdów na polskie
+//* poczytać na temat selecta
+//* zrobić paginację
+//* zrobić sortowanie np: po pierwszych literach marki
+//? ==========================================================================
 
 export default function VehiclesList2() {
-  const vehiclesList = useVehicalStorage2((state) => state.vehicleList);
+  const vehiclesList = [
+    ...useVehicalStorage2((state) => state.vehicleList),
+  ].sort((a, b) => {
+    return a.name.localeCompare(b.name, "pl");
+  });
   const [openAddVehicleDialog, setOpenAddVehicleDialog] = useState(false);
+  const [openEditVehicleDialog, setOpenEditVehicleDialog] =
+    useState<Vehicle | null>(null);
 
   return (
     <Card className="flex-1 rounded-none border-b-0 sm:border-b ">
       <CardHeader className="flex justify-between items-center">
-        <CardTitle>Lista pojazdów</CardTitle>
+        <CardTitle>Lista pojazdów: {vehiclesList.length}</CardTitle>
         <Button
           onClick={() => {
             setOpenAddVehicleDialog(true);
@@ -69,6 +112,10 @@ export default function VehiclesList2() {
                         </span>
                       ))}
                     </div>
+                    <span className="text-muted-foreground">
+                      kategoria pojazdu:{" "}
+                    </span>
+                    <span>{vehicle.category}</span>
 
                     <br />
                     <span className="text-xs text-muted-foreground">
@@ -77,10 +124,19 @@ export default function VehiclesList2() {
                   </CardContent>
                 </div>
                 <div className="flex flex-col justify-center gap-5 p-4 md:flex-row">
-                  <Button size="sm">edytuj</Button>
-                  <Button size={"sm"} variant={"destructive"}>
-                    Usuń
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setOpenEditVehicleDialog(vehicle);
+                    }}
+                  >
+                    edytuj
                   </Button>
+                  <RemoveVehicle id={vehicle.id}>
+                    <Button size={"sm"} variant={"destructive"}>
+                      Usuń
+                    </Button>
+                  </RemoveVehicle>
                 </div>
               </Card>
             ))
@@ -97,16 +153,210 @@ export default function VehiclesList2() {
           }}
         />
       )}
+
+      {/** edit vehicle dialg */}
+      {openEditVehicleDialog && (
+        <EditVehicleDialog
+          vehicleObj={openEditVehicleDialog}
+          open={!!openEditVehicleDialog}
+          setOpen={() => {
+            setOpenEditVehicleDialog(null);
+          }}
+        />
+      )}
     </Card>
   );
 }
 
-// ================= add vehicle dialog =====================================
+// ================= edit vehicle dialog ====================================
+interface editVehicle {
+  open: boolean;
+  setOpen: () => void;
+  vehicleObj: Vehicle;
+}
 
-//todo zrobić kolejne pola -> typ pojazdu i rodzaj pojazdu
-//* pozmieniać i initialData kategorie pojazdów na polskie
-//* zrobić listę wyboru kategorii w dodawaniu pojazdu
+function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
+  const form = useForm<Vehicle>({
+    resolver: zodResolver(vehicleSchema),
+    defaultValues: {
+      id: vehicleObj.id,
+      name: vehicleObj.name,
+      types: vehicleObj.types,
+      category: vehicleObj.category,
+    },
+  });
 
+  const { register, watch, setValue } = form;
+  const currentTypes = watch("types") || [];
+
+  const onSubmit = (data: Vehicle) => {
+    console.log(data);
+    setOpen();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edycja pojazdu</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Nazwa pojazdu</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            
+
+            {currentTypes.map((type, index) => (
+              <FormField
+                // Poprawka 1: Bezpieczniejszy klucz dla Reacta
+                key={`vehicle-type-${index}`}
+                control={form.control}
+                // Poprawka 2: Asercja typu 'as const', żeby TypeScript nie zgłaszał błędu 'never'
+                name={`types.${index}` as const}
+                render={({ field }) => {
+                  return (
+                    <FormItem className="my-2">
+                      {/* Etykieta pola zostaje nad inputem */}
+                      <FormLabel>typ pojazdu {index + 1}</FormLabel>
+
+                      {/* Kontener układający Input i Button obok siebie */}
+                      <div className="flex items-center gap-2">
+                        <FormControl>
+                          {/* flex-1 rozciąga input na całą dostępną szerokość */}
+                          <Input {...field} className="flex-1" />
+                        </FormControl>
+
+                        {/* Przycisk usuwania po prawej stronie */}
+                        <Button
+                          type="button" // Ważne: zapobiega wysłaniu formularza
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            
+                            // 2. Filtrujemy ją, wyrzucając element o bieżącym indeksie
+                            const updatedTypes = currentTypes.filter(
+                              (_, i) => i !== index,
+                            );
+                            // 3. Aktualizujemy stan w React Hook Form
+                            form.setValue("types", updatedTypes);
+                          }}
+                        >
+                          usuń
+                        </Button>
+                      </div>
+
+                      {/* Komunikat błędu pod inputem i przyciskiem */}
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            ))}
+            <Button
+              type="button"
+              variant={"secondary"}
+              onClick={() => {
+                form.setValue("types", [...currentTypes, ""]);
+              }}
+            >
+              dodaj nowy typ pojazdu
+            </Button>
+
+            <FormField
+              control={form.control}
+              name="category" //brand category
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kategoria pojazdu</FormLabel>
+
+                  {/* Ważne: przekazujemy metody z 'field' do komponentu Select */}
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className=" w-full">
+                        {/* Wyświetli wybrany element lub placeholder jeśli pusto */}
+                        <SelectValue placeholder="Wybierz kategorię" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent position="popper">
+                      {/* Wartości 'value' muszą odpowiadać temu, co akceptuje Twój stan/Zod */}
+                      <SelectItem value="truck">Ciężarówka (truck)</SelectItem>
+                      <SelectItem value="bus">Autobus (bus)</SelectItem>
+                      <SelectItem value="van">Van</SelectItem>
+                      <SelectItem value="pickup">Pickup</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit">zapisz</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+//? =========================================================================
+
+// ================= remove vehicle dialog ==================================
+
+interface removeVehicle {
+  children: React.ReactNode;
+  id: string;
+}
+
+function RemoveVehicle({ children, id }: removeVehicle) {
+  const removeVehicle = useVehicalStorage2((state) => state.removeVehicle);
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Usuwanie pojazdu</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Anuluj</AlertDialogCancel>
+          <AlertDialogAction
+            variant={"destructive"}
+            onClick={() => {
+              removeVehicle(id);
+            }}
+          >
+            Potwierdź
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+//? ==========================================================================
+
+// ================= add vehicle dialog ======================================
 
 interface addDialog {
   open: boolean;
@@ -115,34 +365,37 @@ interface addDialog {
 
 const VehicleFormValuesSchema = z.object({
   id: z.string().uuid({ message: "Niepoprawny format ID" }),
-
   name: z.string().min(1, { message: "Nazwa marki jest wymagana" }),
-
   types: z
     .string()
     .min(1, { message: "Musisz podać przynajmniej jeden model" }),
-
   category: z.string().min(1, { message: "Musisz podać typ pojazdu" }),
 });
- type VehicleForm = z.infer<typeof VehicleFormValuesSchema>;
-
+type VehicleForm = z.infer<typeof VehicleFormValuesSchema>;
 
 function AddVehicle({ open, setOpen }: addDialog) {
+  const addVehicle = useVehicalStorage2((state) => state.addVehicle);
   const form = useForm<VehicleForm>({
     resolver: zodResolver(VehicleFormValuesSchema),
     defaultValues: {
       id: uuidv4(),
       name: "",
-      types: '', 
-      category: "nowy", //todo bez jednego znaki nie przechodzi walidacji
+      types: "",
+      category: undefined,
     },
   });
 
   const onSubmit = (data: VehicleForm) => {
-    console.log(data)
-  }
-
-
+    console.log(data);
+    const obj = {
+      id: data.id,
+      name: data.name,
+      types: [data.types],
+      category: data.category,
+    };
+    addVehicle(obj);
+    setOpen();
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -156,23 +409,25 @@ function AddVehicle({ open, setOpen }: addDialog) {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            <FormField 
+            <FormField
               control={form.control}
               name="name" //brand name
-              render={({field}) => {
-                return <FormItem>
-                  <FormLabel>Nazwa pojazdu</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>;
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Nazwa pojazdu</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
               }}
             />
-            <FormField 
+            <FormField
               control={form.control}
               name="types" //brand type
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>typ pojazdu</FormLabel>
                   <FormControl>
@@ -182,15 +437,34 @@ function AddVehicle({ open, setOpen }: addDialog) {
                 </FormItem>
               )}
             />
-            <FormField 
+            <FormField
               control={form.control}
-              name='category' //brand category
-              render={({field}) => (
+              name="category" //brand category
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>kategoria pojazdu</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                  <FormLabel>Kategoria pojazdu</FormLabel>
+
+                  {/* Ważne: przekazujemy metody z 'field' do komponentu Select */}
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className=" w-full">
+                        {/* Wyświetli wybrany element lub placeholder jeśli pusto */}
+                        <SelectValue placeholder="Wybierz kategorię" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent position="popper">
+                      {/* Wartości 'value' muszą odpowiadać temu, co akceptuje Twój stan/Zod */}
+                      <SelectItem value="truck">Ciężarówka (truck)</SelectItem>
+                      <SelectItem value="bus">Autobus (bus)</SelectItem>
+                      <SelectItem value="van">Van</SelectItem>
+                      <SelectItem value="pickup">Pickup</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -203,4 +477,4 @@ function AddVehicle({ open, setOpen }: addDialog) {
   );
 }
 
-// ==========================================================================
+//? ==========================================================================
