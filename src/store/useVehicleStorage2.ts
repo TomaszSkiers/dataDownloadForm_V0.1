@@ -10,6 +10,11 @@ interface vehiclesState2 {
   seedInitialData: () => void;
   addVehicle: (vehicle: Vehicle) => void;
   removeVehicle: (id: string) => void;
+  updateVehicle: (id: string, updatedVehicle: Vehicle) => void;
+  // === sortowanie
+  activeSort: string;
+  setActiveSort: (vehicleKind: string) => void,
+  sortedVehicles: Vehicle[]
 }
 
 export const useVehicalStorage2 = create<vehiclesState2>()(
@@ -22,7 +27,13 @@ export const useVehicalStorage2 = create<vehiclesState2>()(
         }
       },
       addVehicle: (vehicle)=> set((state) => ({vehicleList: [...state.vehicleList, vehicle]})),
-      removeVehicle: (id) => {set((state) => ({vehicleList: state.vehicleList.filter((vehicle) => vehicle.id !== id)}))}
+      removeVehicle: (id) => {set((state) => ({vehicleList: state.vehicleList.filter((vehicle) => vehicle.id !== id)}))},
+      updateVehicle: (id, updatedVehicle) => set((state) => ({vehicleList: state.vehicleList.map((vehicle) => vehicle.id === id ? updatedVehicle : vehicle)})),
+
+// === sortowanie ===============================================================================================================================================
+      activeSort: 'bus',
+      setActiveSort: (vehKind) => set(() => ({activeSort: vehKind})),
+      sortedVehicles: [],
     }),
     {
       name: 'testowy-magazyn-pojazdow-2',

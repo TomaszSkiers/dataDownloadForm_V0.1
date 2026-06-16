@@ -13,7 +13,7 @@ export const useViewStore = create<ViewState>()(
 
   (set) => ({
     activeView: "power",
-    techniciansList: [],
+    // techniciansList: [],
 
     setActiveView: (view) => set({ activeView: view }),
   }),

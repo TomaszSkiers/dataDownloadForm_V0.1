@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import {
   Form,
@@ -43,18 +43,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Vehicle, vehicleSchema } from "../../../../constants/initialData";
+import {
+  bodyType,
+  Vehicle,
+  vehicleSchema,
+} from "../../../../constants/initialData";
 
 //!   --- mikrozadania -------------------------------------------------------
 //todo zrobić edycję pojazdu
-//todo wyeliminować redundancję w selectach
-//todo 1. dorobić pola formularza
-//todo 2. zastanowić się jak dodawać nowe typy pojazdu
-
+//todo zrobić sortowanie po kategorii
+//todo poprawić wyświetlanie typów w widoku mobile
+//todo na początek zrobić, że po wybraniu z listy ustawia się w stanie rodzaj pojazdu
+//todo później zrobić sortowanie w stanie
+//
 //* pozmieniać i initialData kategorie pojazdów na polskie
 //* poczytać na temat selecta
 //* zrobić paginację
-//* zrobić sortowanie np: po pierwszych literach marki
 //? ==========================================================================
 
 export default function VehiclesList2() {
@@ -63,6 +67,8 @@ export default function VehiclesList2() {
   ].sort((a, b) => {
     return a.name.localeCompare(b.name, "pl");
   });
+  const rodzajPojazdu = useVehicalStorage2((s) => s.activeSort)
+  const ustawRodzajPojazdu = useVehicalStorage2((s)=>s.setActiveSort)
   const [openAddVehicleDialog, setOpenAddVehicleDialog] = useState(false);
   const [openEditVehicleDialog, setOpenEditVehicleDialog] =
     useState<Vehicle | null>(null);
@@ -70,7 +76,20 @@ export default function VehiclesList2() {
   return (
     <Card className="flex-1 rounded-none border-b-0 sm:border-b ">
       <CardHeader className="flex justify-between items-center">
+        <div>
         <CardTitle>Lista pojazdów: {vehiclesList.length}</CardTitle>
+        <Select value={rodzajPojazdu} onValueChange={ustawRodzajPojazdu}> {/**tu odczyt ze stanu */}
+          <SelectTrigger>
+            <SelectValue placeholder='wybierz kategorię'/>
+          </SelectTrigger>
+          <SelectContent position={'popper'}>
+            {/* <SelectItem value={bodyType[0].bodyName}>{bodyType[0].description}</SelectItem> */}
+            {bodyType.map((type) => (
+              <SelectItem key={type.id} value={type.bodyName}> {type.description}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        </div>
         <Button
           onClick={() => {
             setOpenAddVehicleDialog(true);
@@ -176,6 +195,7 @@ interface editVehicle {
 }
 
 function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
+  const updateVehicle = useVehicalStorage2((state) => state.updateVehicle);
   const form = useForm<Vehicle>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: {
@@ -186,11 +206,15 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
     },
   });
 
-  const { register, watch, setValue } = form;
-  const currentTypes = watch("types") || [];
+  const currentTypes =
+    useWatch({
+      control: form.control,
+      name: "types",
+    }) || [];
 
   const onSubmit = (data: Vehicle) => {
     console.log(data);
+    updateVehicle(vehicleObj.id, data);
     setOpen();
   };
 
@@ -221,8 +245,6 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
               }}
             />
 
-            
-
             {currentTypes.map((type, index) => (
               <FormField
                 // Poprawka 1: Bezpieczniejszy klucz dla Reacta
@@ -249,7 +271,6 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
                           variant="destructive"
                           size="sm"
                           onClick={() => {
-                            
                             // 2. Filtrujemy ją, wyrzucając element o bieżącym indeksie
                             const updatedTypes = currentTypes.filter(
                               (_, i) => i !== index,
@@ -269,6 +290,11 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
                 }}
               />
             ))}
+            {form.formState.errors.types?.root && (
+              <p className="text-sm font-medium text-destructive">
+                {form.formState.errors.types.root.message}
+              </p>
+            )}
             <Button
               type="button"
               variant={"secondary"}
@@ -276,7 +302,7 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
                 form.setValue("types", [...currentTypes, ""]);
               }}
             >
-              dodaj nowy typ pojazdu
+              dodaj nowy model pojazdu
             </Button>
 
             <FormField
@@ -300,10 +326,15 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
 
                     <SelectContent position="popper">
                       {/* Wartości 'value' muszą odpowiadać temu, co akceptuje Twój stan/Zod */}
-                      <SelectItem value="truck">Ciężarówka (truck)</SelectItem>
+                      {bodyType.map((type) => (
+                        <SelectItem key={type.id} value={type.bodyName}>
+                          {type.description}
+                        </SelectItem>
+                      ))}
+                      {/* <SelectItem value="truck">Ciężarówka (truck)</SelectItem>
                       <SelectItem value="bus">Autobus (bus)</SelectItem>
                       <SelectItem value="van">Van</SelectItem>
-                      <SelectItem value="pickup">Pickup</SelectItem>
+                      <SelectItem value="pickup">Pickup</SelectItem> */}
                     </SelectContent>
                   </Select>
 
@@ -458,10 +489,11 @@ function AddVehicle({ open, setOpen }: addDialog) {
 
                     <SelectContent position="popper">
                       {/* Wartości 'value' muszą odpowiadać temu, co akceptuje Twój stan/Zod */}
-                      <SelectItem value="truck">Ciężarówka (truck)</SelectItem>
-                      <SelectItem value="bus">Autobus (bus)</SelectItem>
-                      <SelectItem value="van">Van</SelectItem>
-                      <SelectItem value="pickup">Pickup</SelectItem>
+                      {bodyType.map((type) => (
+                        <SelectItem key={type.id} value={type.bodyName}>
+                          {type.description}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
