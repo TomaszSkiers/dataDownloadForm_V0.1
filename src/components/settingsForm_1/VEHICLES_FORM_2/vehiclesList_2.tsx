@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
 import { PlusCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -50,45 +50,70 @@ import {
 } from "../../../../constants/initialData";
 
 //!   --- mikrozadania -------------------------------------------------------
+//! custom Hook do sortowania z useMemo
 //todo zrobić edycję pojazdu
 //todo zrobić sortowanie po kategorii
 //todo poprawić wyświetlanie typów w widoku mobile
 //todo na początek zrobić, że po wybraniu z listy ustawia się w stanie rodzaj pojazdu
 //todo później zrobić sortowanie w stanie
-//
+//*dorobić zabezpieczenie przed pustą listą
 //* pozmieniać i initialData kategorie pojazdów na polskie
 //* poczytać na temat selecta
 //* zrobić paginację
 //? ==========================================================================
 
 export default function VehiclesList2() {
-  const vehiclesList = [
-    ...useVehicalStorage2((state) => state.vehicleList),
-  ].sort((a, b) => {
-    return a.name.localeCompare(b.name, "pl");
-  });
-  const rodzajPojazdu = useVehicalStorage2((s) => s.activeSort)
-  const ustawRodzajPojazdu = useVehicalStorage2((s)=>s.setActiveSort)
+  // const vehiclesList = [
+  //   ...useVehicalStorage2((state) => state.vehicleList),
+  // ].sort((a, b) => {
+  //   return a.name.localeCompare(b.name, "pl");
+  // });
+
+  // const rodzajPojazdu = useVehicalStorage2((s) => s.activeSort)
+  // const vehiclesList = useVehicalStorage2(s => s.vehicleList).filter((vehicle => vehicle.category === rodzajPojazdu)).sort((a,b) => (a.name.localeCompare(b.name, 'pl'))) //todo memoizacja czy potrzebna jak jest stan
+  // const ustawRodzajPojazdu = useVehicalStorage2((s)=>s.setActiveSort)
+
+
+  //* === wyodrębnić do customHooka ==========================================
+  const kindOfVehicle = useVehicalStorage2((s) => s.activeSort);
+  const rawVehicleList = useVehicalStorage2((s) => s.vehicleList);
+  const setKindOfVehicle = useVehicalStorage2((s) => s.setActiveSort);
+
+  const vehiclesList = useMemo(()=> {
+    return rawVehicleList
+      .filter((vehicle) => vehicle.category === kindOfVehicle) 
+      .sort((a,b) => a.name.localeCompare(b.name, 'pl'))
+  }, [rawVehicleList, kindOfVehicle])
+  //* ------------------------------------------------------------------------
+
+
   const [openAddVehicleDialog, setOpenAddVehicleDialog] = useState(false);
   const [openEditVehicleDialog, setOpenEditVehicleDialog] =
     useState<Vehicle | null>(null);
 
+ 
+
   return (
     <Card className="flex-1 rounded-none border-b-0 sm:border-b ">
       <CardHeader className="flex justify-between items-center">
-        <div>
-        <CardTitle>Lista pojazdów: {vehiclesList.length}</CardTitle>
-        <Select value={rodzajPojazdu} onValueChange={ustawRodzajPojazdu}> {/**tu odczyt ze stanu */}
-          <SelectTrigger>
-            <SelectValue placeholder='wybierz kategorię'/>
-          </SelectTrigger>
-          <SelectContent position={'popper'}>
-            {/* <SelectItem value={bodyType[0].bodyName}>{bodyType[0].description}</SelectItem> */}
-            {bodyType.map((type) => (
-              <SelectItem key={type.id} value={type.bodyName}> {type.description}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-3 ">
+          <CardTitle>Lista pojazdów: {vehiclesList.length}</CardTitle>
+          <Select value={kindOfVehicle} onValueChange={setKindOfVehicle}>
+            {" "}
+            {/**tu odczyt ze stanu */}
+            <SelectTrigger className="border border-destructive w-full">
+              <SelectValue placeholder="wybierz kategorię" />
+            </SelectTrigger>
+            <SelectContent position={"popper"}>
+              {/* <SelectItem value={bodyType[0].bodyName}>{bodyType[0].description}</SelectItem> */}
+              {bodyType.map((type) => (
+                <SelectItem key={type.id} value={type.bodyName}>
+                  {" "}
+                  {type.description}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <Button
           onClick={() => {
