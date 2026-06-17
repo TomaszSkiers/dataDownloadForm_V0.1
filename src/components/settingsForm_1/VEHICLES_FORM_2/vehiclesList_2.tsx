@@ -33,22 +33,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
 import {
   bodyType,
   Vehicle,
   vehicleSchema,
 } from "../../../../constants/initialData";
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
+import { RemoveVehicleDialog } from "./removeVehicleDialog";
 
 //!   --- mikrozadania -------------------------------------------------------
 //todo refaktoryzacja kodu
@@ -168,11 +160,11 @@ export default function VehiclesList2() {
                   >
                     edytuj
                   </Button>
-                  <RemoveVehicle id={vehicle.id}>
+                  <RemoveVehicleDialog id={vehicle.id}>
                     <Button size={"sm"} variant={"destructive"}>
                       Usuń
                     </Button>
-                  </RemoveVehicle>
+                  </RemoveVehicleDialog>
                 </div>
               </Card>
             ))
@@ -370,39 +362,7 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
 
 //? =========================================================================
 
-// ================= remove vehicle dialog ==================================
 
-interface removeVehicle {
-  children: React.ReactNode;
-  id: string;
-}
-
-function RemoveVehicle({ children, id }: removeVehicle) {
-  const removeVehicle = useVehicalStorage2((state) => state.removeVehicle);
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Usuwanie pojazdu</AlertDialogTitle>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Anuluj</AlertDialogCancel>
-          <AlertDialogAction
-            variant={"destructive"}
-            onClick={() => {
-              removeVehicle(id);
-            }}
-          >
-            Potwierdź
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-//? ==========================================================================
 
 // ================= add vehicle dialog ======================================
 
