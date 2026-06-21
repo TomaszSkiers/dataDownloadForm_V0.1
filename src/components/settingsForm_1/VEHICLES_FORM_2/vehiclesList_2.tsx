@@ -41,12 +41,19 @@ import {
 } from "../../../../constants/initialData";
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
 import { RemoveVehicleDialog } from "./removeVehicleDialog";
+import { AddVehicleDialog } from "./addVehicleDialog";
 
 //!   --- mikrozadania -------------------------------------------------------
-//todo refaktoryzacja kodu
-//todo poprawić wyświetlanie typów w widoku mobile
+
+//todo refaktoryzacja kodu:
+
+//todo ==> 1. przeanalizować komponent edycji pojazdu 'automatyczne generowanie kolejnych inputów'
+//todo ==> 2. aktualizacja o taki mechanizm komponentu 'dodaj pojazd'
+
+//* poprawić wyświetlanie typów w widoku mobile
 //* zrobić paginację
-//? ==========================================================================
+
+//! ==========================================================================
 
 export default function VehiclesList2() {
   // const vehiclesList = [
@@ -174,7 +181,7 @@ export default function VehiclesList2() {
 
       {/** add vehicle dialog */}
       {openAddVehicleDialog && (
-        <AddVehicle
+        <AddVehicleDialog
           open={openAddVehicleDialog}
           setOpen={() => {
             setOpenAddVehicleDialog(false);
@@ -361,8 +368,6 @@ function EditVehicleDialog({ open, setOpen, vehicleObj }: editVehicle) {
 }
 
 //? =========================================================================
-
-
 
 // ================= add vehicle dialog ======================================
 
