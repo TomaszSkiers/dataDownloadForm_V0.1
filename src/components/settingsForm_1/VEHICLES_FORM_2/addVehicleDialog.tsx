@@ -19,6 +19,28 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { InputDebouncer } from "@/components/ui/inputDebouncer";
+import { z } from "zod";
+
+// === =================================================
+
+export const vehicleFormSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Nazwa marki jest wymagana"),
+  category: z.string(),
+  
+  // Zamiast z.array(z.string()), robimy tablicę obiektów:
+  types: z.array(
+    z.object({
+      value: z.string().min(1, "Typ musi mieć przynajmniej 1 znak"),
+    })
+  ).min(1, "Dodaj przynajmniej jeden typ pojazdu"),
+});
+
+// Typ dedykowany wyłącznie dla struktury formularza
+export type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
+
+// ============================================================
 
 interface addDialog {
   open: boolean;
@@ -76,10 +98,13 @@ export function AddVehicleDialog({ open, setOpen }: addDialog) {
                   <FormControl>
                     <Input placeholder="np. Mercedes" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
+            {/* <InputNoRender {...form.register('name')}></InputNoRender> */}
             {/*todo ============> to jeszcze raz żeby dobrze zrozumieć <================================ */}
+
             {/** dynamiczna lista typów modeli */}
             {currentTypes.map(
               (
@@ -91,13 +116,27 @@ export function AddVehicleDialog({ open, setOpen }: addDialog) {
                   control={form.control}
                   name={`types.${index}` as const} //* podłączamy pole do konkretnego elementu w tablicy 'types'
                   render={({ field }) => (
+                    //! === MIKROZADANIA =======
+                    //* przeanalizować działanie debouncera
                     <FormItem>
                       <FormLabel>typ pojazdu {index + 1}</FormLabel>
                       <div className="flex items-center gap-2">
                         <FormControl>
-                          <Input
+                          <InputDebouncer
                             placeholder="wprowadź nowy typ pojazdu"
-                            {...field}
+                            defaultValue={field.value}
+                            debounceDelay={500}
+                            onDebounceChange={(newValue) => {
+                              const currentTypes =
+                                form.getValues("types") || [];
+                              const updatedTypes = [...currentTypes];
+                              updatedTypes[index] = newValue;
+                              form.setValue("types", updatedTypes, {
+                                shouldDirty: true,
+                              });
+                            }}
+                            onBlur={field.onBlur} // RHF nadal wie, kiedy użytkownik opuścił pole
+                            ref={field.ref}
                           />
                         </FormControl>
                         <Button
@@ -108,7 +147,10 @@ export function AddVehicleDialog({ open, setOpen }: addDialog) {
                             const updatedTypes = currentTypes.filter(
                               (_, i) => i !== index,
                             );
-                            form.setValue("types", updatedTypes);
+                            form.setValue("types", updatedTypes, {
+                              shouldDirty: true,
+                              shouldValidate: true, // TA FLAGA JEST KLUCZOWA! Instrukcja dla RHF: "Sprawdź błędy teraz!"
+                            });
                           }}
                         >
                           usuń

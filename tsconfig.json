@@ -30,6 +30,6 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "src/lib/testowyDebouncer.js"  ],
   "exclude": ["node_modules"] // Bardzo ważne: omija biblioteki zewnętrzne
 }

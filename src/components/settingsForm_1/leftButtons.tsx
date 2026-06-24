@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 import { SETTINGS_BUTTONS_LEFT } from "../../../constants/initialData";
 import { Card, CardHeader, CardTitle } from "../ui/card";
 import { useViewStore } from "@/store/useViewStore";
+import React from "react";
 
 /**
- * * KOMPONENT GENERUJE PRZYCISKI DLA LEWEGO MENU USTAWIEŃ
+ * * KOMPONENT GENERUJE PRZYCISKI DLA GÓRNEGO MENU USTAWIEŃ
  */
 
 interface Props {
@@ -43,3 +44,6 @@ export default function LeftFormButtons({ className }: Props) {
     </div>
   );
 }
+
+
+
