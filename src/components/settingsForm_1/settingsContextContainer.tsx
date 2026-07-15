@@ -8,6 +8,7 @@ import ReasonsList from "../settingsForm_1/reasonsForm/reasonsList";
 import PowerOff from "./power/settingsPowerOff";
 import WorkshopList2 from "./WORKSHOP-FORM-2/workshopList2";
 import VehiclesList_2 from "./VEHICLES_FORM_2/vehiclesList_2";
+import SimpleVehicleForm from "./reasonsForm/reasonList2";
 
 interface Props {
   className?: string;
@@ -25,7 +26,7 @@ export default function SettingsContextContainer({ className }: Props) {
       {activeView === "technicy" && <TechniciansList />}
       {activeView === "warsztaty" && <WorkshopList2 />}
       {activeView === "pojazdy" && <VehiclesList_2 />}
-      {activeView === "powody" && <ReasonsList />}
+      {activeView === "powody" && <SimpleVehicleForm />}
       {activeView === 'power' && <PowerOff />}
     </div>
   );

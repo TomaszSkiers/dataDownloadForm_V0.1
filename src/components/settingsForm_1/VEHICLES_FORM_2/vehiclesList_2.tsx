@@ -42,6 +42,8 @@ import {
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
 import { RemoveVehicleDialog } from "./removeVehicleDialog";
 import { AddVehicleDialog } from "./addVehicleDialog/addVehicleDialog";
+import AddVehicleDialog_2 from "./addVehicleDialog2";
+import AddVehicleDialog_3 from "./addVehicleDialog_3";
 
 //!   --- mikrozadania -------------------------------------------------------
 
@@ -181,11 +183,9 @@ export default function VehiclesList2() {
 
       {/** add vehicle dialog */}
       {openAddVehicleDialog && (
-        <AddVehicleDialog
+        <AddVehicleDialog_3
           open={openAddVehicleDialog}
-          setOpen={() => {
-            setOpenAddVehicleDialog(false);
-          }}
+          onOpenChange={setOpenAddVehicleDialog}
         />
       )}
 
