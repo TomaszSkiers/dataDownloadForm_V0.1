@@ -140,7 +140,7 @@ interface TypeInputRowProps {
   onRemove: (index: number) => void;
 }
 
-const TypeInputRow = React.memo(({ index, onRemove }: TypeInputRowProps) => {
+const   TypeInputRow = React.memo(({ index, onRemove }: TypeInputRowProps) => {
   const { control } = useFormContext<FormValues>();
   
   return (
