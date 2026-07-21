@@ -14,7 +14,9 @@ interface Props {
 }
 
 export default function LeftFormButtons({ className }: Props) {
-  const { activeView, setActiveView } = useViewStore();
+  // Używamy selektorów, aby komponent reagował TYLKO na zmianę activeView
+  const activeView = useViewStore((state) => state.activeView);
+  const setActiveView = useViewStore((state) => state.setActiveView);
 
   return (
     <div className={cn("mt-5 px-3 sm:px-0" , className)}>

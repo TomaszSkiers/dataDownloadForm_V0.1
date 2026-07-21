@@ -8,6 +8,7 @@ import {
   Control,
   FormProvider,
   useFieldArray,
+  UseFieldArrayRemove,
   useForm,
   useFormContext,
 } from "react-hook-form";
@@ -135,7 +136,7 @@ function VehicleTypeSectionHeader({ onAddType }: VehicleTypeSectionProps) {
 }
 
 // =================================================================
-// komponent generowania wierszy typu pojazdu - komponent 4
+// komponent generowania wierszy typu pojazdu wrapper
 // =================================================================
 
 //todo nowość jakiej się nauczyłem to clearErrors
@@ -151,10 +152,33 @@ function DynamicTypesSection() {
       <VehicleTypeSectionHeader
         onAddType={() => {
           append({ value: "" });
-          clearErrors();
+          clearErrors('types');
         }}
       />
 
+      <TypesList fields={fields} control={control} remove={remove} />
+      <Napis />
+    </div>
+  );
+}
+
+// =================================================================
+// komponent generowania wierszy typu pętla
+// =================================================================
+
+import { FieldArrayWithId } from "react-hook-form";
+
+// 1. Interfejs propsów dla komponentu listy
+interface TypesListProps {
+  fields: FieldArrayWithId<typeFormSchema, "types", "id">[];
+  control: Control<typeFormSchema>;
+  remove: UseFieldArrayRemove;
+}
+
+// 2. Komponent renderujący pętlę wierszy (owinięty w React.memo)
+const TypesList = React.memo(({ fields, control, remove }: TypesListProps) => {
+  return (
+    <>
       {fields.map((field, index) => (
         <RowWrapper
           key={field.id}
@@ -163,10 +187,10 @@ function DynamicTypesSection() {
           remove={remove}
         />
       ))}
-      <Napis />
-    </div>
+    </>
   );
-}
+});
+TypesList.displayName = "TypesList";
 
 // =================================================================
 // wiersz typu pojazdu- komponent 5
@@ -177,27 +201,35 @@ interface TypeInputRowProps {
   control: Control<typeFormSchema>; // Łączymy kontroler z naszym interfejsem danych
 }
 
-const TypeInputRow = React.memo(
-  ({ index, control }: { index: number; control: any }) => {
-    return (
-      <FormField
-        control={control}
-        name={`types.${index}.value`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    );
-  },
-);
+const TypeInputRow = React.memo(({ index, control }: TypeInputRowProps) => {
+  return (
+    <FormField
+      control={control}
+      name={`types.${index}.value`}
+      render={({ field }) => (
+        <FormItem className="flex-1">
+          <FormControl>
+            <Input {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+});
 TypeInputRow.displayName = "TypeInputRow";
 
-const RowWrapper = React.memo(({ index, control, remove }: any) => {
+// =================================================================
+// wiersz typu pojazdu- komponent 5
+// =================================================================
+
+interface RowWrapperProps {
+  index: number;
+  control: Control<typeFormSchema>;
+  remove: UseFieldArrayRemove;
+}
+
+const RowWrapper = React.memo(({ index, control, remove }: RowWrapperProps) => {
   const buttonClick = () => {
     remove(index);
   };
