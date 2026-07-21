@@ -5,12 +5,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Control,
   FormProvider,
   useFieldArray,
   useForm,
   useFormContext,
 } from "react-hook-form";
-import { vehicleSchema, Vehicle } from "../../../../constants/initialData";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -79,7 +80,7 @@ import { Input } from "@/components/ui/input";
 function AddVehicleForm({ onClose }: AddVehicleFormProps) {
   const form = useForm<typeFormSchema>({
     resolver: zodResolver(formSchema),
-    mode: "onChange",
+    // mode: "onChange",
     defaultValues: {
       name: "Volvo",
       // category: "truck",
@@ -107,6 +108,7 @@ function AddVehicleForm({ onClose }: AddVehicleFormProps) {
       >
         <BrandName />
         <DynamicTypesSection />
+        <ArrayErrorDisplay />
         <Button type={"submit"}>zapisz pojazd</Button>
       </form>
     </FormProvider>
@@ -149,26 +151,64 @@ function DynamicTypesSection() {
       <VehicleTypeSectionHeader
         onAddType={() => {
           append({ value: "" });
-          clearErrors("types");
+          clearErrors();
         }}
       />
-      <div>
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex ">
-            <TypeInputRow index={index} className="flex-1" />
-            <RemoveVehicleTypeButton
-              onRemove={() => {
-                remove(index);
-              }}
-            />
-          </div>
-        ))}
-      </div>
-      {/** ten komponent nie potrzebnie renderuje mnósto innych */}
-      <ArrayErrorDisplay />
+
+      {fields.map((field, index) => (
+        <RowWrapper
+          key={field.id}
+          index={index}
+          control={control}
+          remove={remove}
+        />
+      ))}
+      <Napis />
     </div>
   );
 }
+
+// =================================================================
+// wiersz typu pojazdu- komponent 5
+// =================================================================
+
+interface TypeInputRowProps {
+  index: number;
+  control: Control<typeFormSchema>; // Łączymy kontroler z naszym interfejsem danych
+}
+
+const TypeInputRow = React.memo(
+  ({ index, control }: { index: number; control: any }) => {
+    return (
+      <FormField
+        control={control}
+        name={`types.${index}.value`}
+        render={({ field }) => (
+          <FormItem className="flex-1">
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  },
+);
+TypeInputRow.displayName = "TypeInputRow";
+
+const RowWrapper = React.memo(({ index, control, remove }: any) => {
+  const buttonClick = () => {
+    remove(index);
+  };
+  return (
+    <div className="flex">
+      <TypeInputRow index={index} control={control} />
+      <Button onClick={buttonClick}>Usuń</Button>
+    </div>
+  );
+});
+RowWrapper.displayName = "RowWrapper";
 
 // =================================================================
 // wyświetlanie błędu o braku typów - komponent 8
@@ -180,8 +220,10 @@ function DynamicTypesSection() {
 //* dokładniejszych obserwacji
 //* moim zdaniem lepsze będzie wprowadzenie własnego monitorowania czy dodano typ pojazdu
 //* niech zod dba o walidację formularza ale informację o błędach pozyskam sobie sprawdzając długość tablicy typów
+//* może to nie jest tak istotne ale dla mnie o wiele lepiej działa
 
 import { useFormState } from "react-hook-form";
+import React from "react";
 
 function ArrayErrorDisplay() {
   const { control } = useFormContext<typeFormSchema>();
@@ -229,34 +271,6 @@ function RemoveVehicleTypeButton({ onRemove }: RemoveVehicleTypeButtonPorps) {
 }
 
 // =================================================================
-// wiersz typu pojazdu- komponent 5
-// =================================================================
-
-interface TypeInputRowProps {
-  index: number;
-  className?: string;
-}
-
-function TypeInputRow({ index, className }: TypeInputRowProps) {
-  const { control } = useFormContext();
-
-  return (
-    <FormField
-      control={control}
-      name={`types.${index}.value`}
-      render={({ field }) => (
-        <FormItem className={cn("", className)}>
-          <FormControl>
-            <Input {...field} placeholder="wpisz typ pojazdu" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-// =================================================================
 // marka pojazdu - komponent 6
 // =================================================================
 
@@ -278,4 +292,11 @@ function BrandName() {
       )}
     />
   );
+}
+// =================================================================
+// testowy napis - komponent 9
+// =================================================================
+
+function Napis() {
+  return <h5>napis testowy czy sie renderuje</h5>;
 }
