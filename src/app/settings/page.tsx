@@ -1,4 +1,4 @@
-import LeftFormButtons from "@/components/settingsForm_1/leftButtons";
+import TopFormButtons from "@/components/settingsForm_1/topButtons";
 import SettingsContextContainer from "@/components/settingsForm_1/settingsContextContainer";
 // import TopFormsButtons from "@/components/settingsForm_1/topFormButtons";
 
@@ -15,7 +15,7 @@ export default function Settings() {
     <main className="flex flex-1 flex-col gap-5">
       {/* <TopFormsButtons className="mb-5 " /> */}
       
-        <LeftFormButtons className="flex gap-2 sm:gap-5 " />
+        <TopFormButtons className="flex gap-2 sm:gap-5 " />
         <SettingsContextContainer className=" flex-1 flex" />
       
     </main>
