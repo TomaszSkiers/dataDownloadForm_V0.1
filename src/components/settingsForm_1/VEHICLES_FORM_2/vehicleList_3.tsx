@@ -16,6 +16,12 @@ import { bodyType, Vehicle } from "../../../../constants/initialData";
 import AddVehicleDialog_3 from "./addVehicleDialog_3";
 import { RemoveVehicleDialog_2 } from "./removeVehicleDialog_2";
 
+//todo =================================================
+//* wykonać nowy komponent vehicleList_4 
+//* całość sterowania zrobić na zustandzie
+//todo =================================================
+
+
 // =====================================================
 // MAIN COMPONENT
 // =====================================================
