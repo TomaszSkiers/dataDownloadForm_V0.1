@@ -41,8 +41,8 @@ import {
 } from "../../../../constants/initialData";
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
 import { RemoveVehicleDialog } from "./removeVehicleDialog";
-import { AddVehicleDialog } from "./addVehicleDialog/addVehicleDialog";
-import AddVehicleDialog_2 from "./addVehicleDialog2";
+// import { AddVehicleDialog } from "./addVehicleDialog/addVehicleDialog";
+// import AddVehicleDialog_2 from "./addVehicleDialog2";
 import AddVehicleDialog_3 from "./addVehicleDialog_3";
 
 //!   --- mikrozadania -------------------------------------------------------

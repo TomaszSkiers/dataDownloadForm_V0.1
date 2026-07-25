@@ -14,8 +14,8 @@ import { PlusCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import { RemoveVehicleDialog_2 } from "./removeVehicleDialog_2";
-import { is } from "date-fns/locale";
-import AddVehicleDialog_3 from "./addVehicleDialog_3";
+// import AddVehicleDialog_3 from "./addVehicleDialog_3";
+import AddVehicleDialog_4 from "./addVehicleDialog_4";
 
 // =====================================================
 // Main
@@ -28,8 +28,6 @@ export default function VehicleList_4() {
     (state) => state.closeDeleteDialog,
   );
 
-  // DoDANY LOG DO DIAGNOSTYKI:
-  console.log("DANE W VEHICLE_LIST_4:", vehicleToDelete);
 
   return (
     <>
@@ -60,12 +58,12 @@ export default function VehicleList_4() {
       )}
 
       {/* Dialog dodawania nowego pojazdu */}
-      {isAddDialogOpen && (
-        <AddVehicleDialog_3
+      {/* tu była popraweczka */}
+        <AddVehicleDialog_4
           open={isAddDialogOpen}
           onOpenChange={setOpenAddDialog}
         />
-      )}
+      
     </>
   );
 }

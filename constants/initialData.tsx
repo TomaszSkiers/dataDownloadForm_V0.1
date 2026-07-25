@@ -510,3 +510,23 @@ export const bodyType: BODY_TYPE[] = [
   { id: uuidv4(), bodyName: "van", description: "dostawczy" },
   { id: uuidv4(), bodyName: "pickup", description: "półciężarówka" },
 ];
+
+// ===============================================================
+// OGRANICZENIA ILOŚCI ZNAKÓW DLA INPUTÓW
+// ===============================================================
+
+export const INPUT_CHARS_LIMITER = {
+  addVehicleDialog: {
+    brand: 30,
+    type: 20,
+    category: 20,
+  },
+  addTechnicianDialog: {
+    technicianName: 30,
+    technicianCard: 16,
+  },
+  addWorkshopDialog: {
+    workshopName: 50,
+    workshopAddress: 100,
+  }
+} as const

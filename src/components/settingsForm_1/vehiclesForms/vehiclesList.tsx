@@ -134,6 +134,7 @@ function AddVehicle({ open, setOpen }: AddVehicleProps) {
       id: data.brand,
       name: data.brand,
       types: [data.type],
+      category: ''
     }
     console.log(vehicleObj)
     addVehicle(vehicleObj)

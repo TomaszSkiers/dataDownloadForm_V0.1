@@ -15,7 +15,18 @@ import {
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+
+//todo =============================================================
+//* trzeba się zastanowić nad ograniczeniem ilości wprowadzanych znaków do inputów
+//* dobrą sprawą był by liczniczek znaków
+//* później przy drukowaniu potrzebne jest ograniczenie długości tekstu
+
+//* trzeba przepisać i przeanalizować jeszcze raz ten komponent i wyświetlanie listy
+//* oraz zrobić edycję pojazdu
+
+//* przepisać usuwanie pojazdu
+//! zaczynamy od analizy i przepisania dodawania pojazdu
+//todo =============================================================
 
 // =================================================================
 // modal dialog - komponent 1
@@ -36,6 +47,7 @@ export default function AddVehicleDialog_3({
         <DialogHeader>
           <DialogTitle>Dodawanie pojazdu v.3</DialogTitle>
         </DialogHeader>
+        <Separator />
         <AddVehicleForm
           onClose={() => {
             onOpenChange(false);
@@ -58,7 +70,8 @@ const formSchema = z.object({
         value: z.string().min(1, "wymagany min 1 znak"),
       }),
     )
-    .min(1, "wymagany minimum 1 typ"),
+    .min(1, "Wymagany minimum 1 typ pojazdu"),
+  category: z.string().min(1, "Wybierz kategorię pojazdu"),
 });
 
 type typeFormSchema = z.infer<typeof formSchema>;
@@ -66,38 +79,48 @@ type typeFormSchema = z.infer<typeof formSchema>;
 interface AddVehicleFormProps {
   onClose: () => void;
 }
-import { v4 as uuidv4 } from "uuid";
+
 import { Plus, Trash2 } from "lucide-react";
 import z from "zod";
 import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { OptimizedFormLabel } from "@/components/ui/labenNoRender";
 import { Input } from "@/components/ui/input";
+import { v4 as uuidv4 } from "uuid";
+
 
 function AddVehicleForm({ onClose }: AddVehicleFormProps) {
+  const addVehiceToStore = useVehicalStorage2((s) => s.addVehicle);
   const form = useForm<typeFormSchema>({
     resolver: zodResolver(formSchema),
     // mode: "onChange",
     defaultValues: {
-      name: "Volvo",
-      // category: "truck",
+      name: "",
       types: [
-        { value: "FH" },
-        { value: "FH16" },
-        { value: "FM" },
-        { value: "FMX" },
+        { value: "" },
+        // { value: "FH" },
+        // { value: "FH16" },
+        // { value: "FM" },
+        // { value: "FMX" },
       ],
+      category: "",
     },
   });
 
-  const onSubmit = () => {
-    console.log("zamykam formę v.3");
-    //? brakuje konwersji na typ danych używanych w bazie danych
-    //? brakuje zapisu do bazy danych
+  const onSubmit = (data: typeFormSchema) => {
+    console.log("zamykam formę v.3", data);
+    const finalData: Vehicle = {
+      ...data,
+      types: data.types.map((t) => t.value),
+      id: uuidv4(),
+    };
+    addVehiceToStore(finalData);
+    toast.success('Dodano nowy pojazd do bazy dnych')
     onClose();
   };
 
@@ -108,8 +131,12 @@ function AddVehicleForm({ onClose }: AddVehicleFormProps) {
         className="flex flex-col gap-2"
       >
         <BrandName />
+        <Separator />
         <DynamicTypesSection />
         <ArrayErrorDisplay />
+        <Separator />
+        <SelectField />
+        <Separator />
         <Button type={"submit"}>zapisz pojazd</Button>
       </form>
     </FormProvider>
@@ -117,50 +144,153 @@ function AddVehicleForm({ onClose }: AddVehicleFormProps) {
 }
 
 // =================================================================
+// select - ustawia rodzaj pojazdu - ciężarówka - autobus itp
+// =================================================================
+function SelectField() {
+  const { control } = useFormContext();
+
+  return (
+    <FormField
+      control={control}
+      name="category"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Kategoria pojazdu</FormLabel>
+          <FormControl>
+            <SelectKindOfVehicle
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+// =================================================================
+// select - ustawia rodzaj pojazdu - ciężarówka - autobus itp
+// =================================================================
+interface SelectKindOfVehicleProps {
+  // Przekazujemy wartość z RHF
+  value: string;
+  // Funkcja RHF aktualizująca stan formularza
+  onValueChange: (value: string) => void;
+}
+
+function SelectKindOfVehicle({
+  value,
+  onValueChange,
+}: SelectKindOfVehicleProps) {
+  return (
+    <Select onValueChange={onValueChange} defaultValue={value}>
+      <SelectTrigger className="w-full sm:w-1/2">
+        <SelectValue placeholder="np: ciężarówka" />
+      </SelectTrigger>
+
+      <SelectContent position="popper">
+        {bodyType.map((type) => (
+          <SelectItem key={type.id} value={type.bodyName}>
+            {type.description}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+// =================================================================
 // komponent dodawania typu pojazdu - przycisk i etykieta - komponent 3
 // =================================================================
+
 interface VehicleTypeSectionProps {
   onAddType: () => void;
 }
 
-function VehicleTypeSectionHeader({ onAddType }: VehicleTypeSectionProps) {
+interface VehicleTypeSectionProps {
+  onAddType: () => void;
+}
+
+export function VehicleTypeSectionHeader({
+  onAddType,
+}: VehicleTypeSectionProps) {
   return (
-    <div className="border flex items-center justify-between">
-      <label className="text-sm font-medium ">typ pojazdu</label>
-      <Button type="button" variant={"outline"} onClick={onAddType}>
-        <Plus />
-        <p className="text-sm font-medium">dodaj typ</p>
+    <div className="flex items-center justify-between">
+      {/* FormLabel automatycznie reaguje na stan błędu w FormItem */}
+      <FormLabel>Typ pojazdu</FormLabel>
+
+      <Button type="button" variant="outline" onClick={onAddType}>
+        <Plus className="mr-2 h-4 w-4" />
+        <span className="text-sm font-medium">dodaj typ</span>
       </Button>
     </div>
   );
 }
 
+// function VehicleTypeSectionHeader({ onAddType }: VehicleTypeSectionProps) {
+//   return (
+//     <div className="border flex items-center justify-between">
+//       <label className="text-sm font-medium ">typ pojazdu</label>
+//       <Button type="button" variant={"outline"} onClick={onAddType}>
+//         <Plus />
+//         <p className="text-sm font-medium">dodaj typ</p>
+//       </Button>
+//     </div>
+//   );
+// }
+
 // =================================================================
 // komponent generowania wierszy typu pojazdu wrapper
 // =================================================================
-
-//todo nowość jakiej się nauczyłem to clearErrors
-
 function DynamicTypesSection() {
   const { control, clearErrors } = useFormContext<typeFormSchema>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "types",
   });
-  return (
-    <div>
-      <VehicleTypeSectionHeader
-        onAddType={() => {
-          append({ value: "" });
-          clearErrors('types');
-        }}
-      />
 
-      <TypesList fields={fields} control={control} remove={remove} />
-      <Napis />
-    </div>
+  return (
+    // Owijamy w FormField i FormItem, aby przekazać stan błędu do podkomponentów
+    <FormField
+      control={control}
+      name="types"
+      render={() => (
+        <FormItem>
+          <VehicleTypeSectionHeader
+            onAddType={() => {
+              append({ value: "" });
+              clearErrors("types");
+            }}
+          />
+          <TypesList fields={fields} control={control} remove={remove} />
+          {/* Opcjonalnie: wyświetli komunikat z Zoda (np. "wymagany minimum 1 typ pojazdu") */}
+          {/* <FormMessage /> */} {/* to wyłączam bo lepszy array messagae */}
+        </FormItem>
+      )}
+    />
   );
 }
+
+// function DynamicTypesSection() {
+//   const { control, clearErrors } = useFormContext<typeFormSchema>();
+//   const { fields, append, remove } = useFieldArray({
+//     control,
+//     name: "types",
+//   });
+//   return (
+//     <div>
+//       <VehicleTypeSectionHeader
+//         onAddType={() => {
+//           append({ value: "" });
+//           clearErrors("types");
+//         }}
+//       />
+
+//       <TypesList fields={fields} control={control} remove={remove} />
+//     </div>
+//   );
+// }
 
 // =================================================================
 // komponent generowania wierszy typu pętla
@@ -176,6 +306,9 @@ interface TypesListProps {
 }
 
 // 2. Komponent renderujący pętlę wierszy (owinięty w React.memo)
+
+//* tu memoizuję renderowanie przed pisaniem w inpucie marki pojazdu
+
 const TypesList = React.memo(({ fields, control, remove }: TypesListProps) => {
   return (
     <>
@@ -195,13 +328,13 @@ TypesList.displayName = "TypesList";
 // =================================================================
 // wiersz typu pojazdu- komponent 5
 // =================================================================
-
+// wcześniej miałem memoizację ale okazała sie nadmioarowa w tym miejscu
 interface TypeInputRowProps {
   index: number;
-  control: Control<typeFormSchema>; // Łączymy kontroler z naszym interfejsem danych
+  control: Control<typeFormSchema>;
 }
 
-const TypeInputRow = React.memo(({ index, control }: TypeInputRowProps) => {
+function TypeInputRow({ index, control }: TypeInputRowProps) {
   return (
     <FormField
       control={control}
@@ -209,19 +342,19 @@ const TypeInputRow = React.memo(({ index, control }: TypeInputRowProps) => {
       render={({ field }) => (
         <FormItem className="flex-1">
           <FormControl>
-            <Input {...field} />
+            <Input placeholder="np. FH16" {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
       )}
     />
   );
-});
-TypeInputRow.displayName = "TypeInputRow";
+}
 
 // =================================================================
 // wiersz typu pojazdu- komponent 5
 // =================================================================
+// tu memoizuję renderowanie reszty wierszy przy pisaniu w jednym z nich
 
 interface RowWrapperProps {
   index: number;
@@ -234,9 +367,10 @@ const RowWrapper = React.memo(({ index, control, remove }: RowWrapperProps) => {
     remove(index);
   };
   return (
-    <div className="flex">
+    <div className="flex gap-1">
       <TypeInputRow index={index} control={control} />
-      <Button onClick={buttonClick}>Usuń</Button>
+      {/* <Button type="button" onClick={buttonClick}>Usuń</Button> */}
+      <RemoveVehicleTypeButton onRemove={buttonClick} />
     </div>
   );
 });
@@ -245,17 +379,20 @@ RowWrapper.displayName = "RowWrapper";
 // =================================================================
 // wyświetlanie błędu o braku typów - komponent 8
 // =================================================================
-//! przeanalizować dlaczego przy próbie dostępu do błędów mam tyle nie potrzebnych renderowań
-//todo  nie rozumiem jeszcze jak dotrzeć do błędów i je wyskubać z obiekut rhf
-//todo  nowość dla mnie to hook useFormState - muszę się go nauczyć
-//* obserwacje - ten komponent wprowadził dodatkowe nie potrzebne renderowanie i wymaga
-//* dokładniejszych obserwacji
-//* moim zdaniem lepsze będzie wprowadzenie własnego monitorowania czy dodano typ pojazdu
-//* niech zod dba o walidację formularza ale informację o błędach pozyskam sobie sprawdzając długość tablicy typów
-//* może to nie jest tak istotne ale dla mnie o wiele lepiej działa
 
 import { useFormState } from "react-hook-form";
 import React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { bodyType, Vehicle } from "../../../../constants/initialData";
+import { Separator } from "@/components/ui/separator";
+import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { toast } from "sonner";
 
 function ArrayErrorDisplay() {
   const { control } = useFormContext<typeFormSchema>();
@@ -275,7 +412,7 @@ function ArrayErrorDisplay() {
 
   return (
     <p className="text-sm font-medium text-destructive animate-in fade-in-50 duration-200 mt-2">
-      {String(arrayError)}
+      {String(arrayError)} - array
     </p>
   );
 }
@@ -313,22 +450,15 @@ function BrandName() {
     <FormField
       control={control}
       name="name"
-      render={({ field, fieldState }) => (
+      render={({ field }) => (
         <FormItem>
           <OptimizedFormLabel>Marka pojazdu</OptimizedFormLabel>
           <FormControl>
-            <Input placeholder="np. Toyota Prius" {...field} />
+            <Input placeholder="np. Volvo" {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
       )}
     />
   );
-}
-// =================================================================
-// testowy napis - komponent 9
-// =================================================================
-
-function Napis() {
-  return <h5>napis testowy czy sie renderuje</h5>;
 }

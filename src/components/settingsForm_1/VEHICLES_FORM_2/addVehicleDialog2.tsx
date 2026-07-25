@@ -218,7 +218,7 @@ const DynamicTypesSection = React.memo(() => {
     <div className="space-y-2 border-t pt-4">
       <SectionHeader onAppend={handleAppend} />
 
-      <div className="space-y-3 max-h-[200px] overflow-y-auto pr-1 py-1">
+      <div className="space-y-3 max-h-50 overflow-y-auto pr-1 py-1">
         {fields.map((field, index) => (
           <TypeInputRow
             key={field.id}
@@ -292,7 +292,7 @@ export default function AddVehicleDialog_2({ ...props }) {
         </DialogHeader>
 
         <AddVehicleForm
-          onSuccess={(data) => {
+          onSuccess={() => {
             if (props.onOpenChange) {
               props.onOpenChange(false);
             }

@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useVehicalStorage2 } from "@/store/useVehicleStorage2"; // dostosuj ścieżkę do swojego sklepu
+import { toast } from "sonner";
 
 // 1. Zaktualizowany interfejs propów
 interface RemoveVehicleProps {
@@ -27,6 +28,7 @@ export function RemoveVehicleDialog_2({
 
   const handleDelete = () => {
     removeVehicle(id);
+    toast.success('Pojazd został usunięty')
     onOpenChange(false); // zamykamy dialog po usunięciu
   };
 
