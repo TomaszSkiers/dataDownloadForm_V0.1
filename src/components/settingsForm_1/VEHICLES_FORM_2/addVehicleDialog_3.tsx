@@ -204,9 +204,6 @@ function SelectKindOfVehicle({
 // komponent dodawania typu pojazdu - przycisk i etykieta - komponent 3
 // =================================================================
 
-interface VehicleTypeSectionProps {
-  onAddType: () => void;
-}
 
 interface VehicleTypeSectionProps {
   onAddType: () => void;
@@ -316,7 +313,7 @@ const TypesList = React.memo(({ fields, control, remove }: TypesListProps) => {
         <RowWrapper
           key={field.id}
           index={index}
-          control={control}
+          control={control} // tu można wziąć z kontekstu
           remove={remove}
         />
       ))}

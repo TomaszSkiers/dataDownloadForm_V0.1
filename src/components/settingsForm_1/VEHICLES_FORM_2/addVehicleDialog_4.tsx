@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2 } from "lucide-react";
+import { CirclePlus, Plus, Trash2 } from "lucide-react";
 import z from "zod";
 import {
   FormControl,
@@ -18,12 +18,21 @@ import { OptimizedFormLabel } from "@/components/ui/labenNoRender";
 import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import {
+  FieldArrayWithId,
+  FormProvider,
+  useFieldArray,
+  useForm,
+  useFormContext,
+  useFormState,
+} from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import React from "react";
 //todo =============================================================
 // poprawiłem renderowanie warunkowe, nie ma utraty efektu zaniku formy po zamknięciu - jeszcze potestować
-//
-// 
+// poprawiłem renderowanie inputów w typach pojazdu - tylko jedno React.memo
+//* muszę przeanalizować jak dobierać się do błędów arrayError komponent
+//* wywalić nadmiarowe <FormField> z TypesHeader-a
 //todo =============================================================
 // =================================================================
 // main dialog AddVehicleDialog - 1
@@ -36,8 +45,6 @@ export default function AddVehicleDialog_4({
   open,
   onOpenChange,
 }: AddVehicleDialogProps) {
-  
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -45,7 +52,7 @@ export default function AddVehicleDialog_4({
           <DialogTitle>dodawanie pojazdu v.4</DialogTitle>
         </DialogHeader>
         <Separator />
-        <AddVehicleForm onSuccess={() => onOpenChange(false)}/>
+        <AddVehicleForm onSuccess={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );
@@ -60,6 +67,9 @@ interface AddVehicleFormProps {
 
 const formSchema = z.object({
   vehicleBrand: z.string().min(1, "* wymagany min 1 znak"),
+  types: z
+    .array(z.object({ value: z.string().min(1, "* wymagany min 1 znak") }))
+    .min(1, "* wymagany min 1 typ pojazdu"),
 });
 type typeFormSchema = z.infer<typeof formSchema>;
 
@@ -68,6 +78,7 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       vehicleBrand: "",
+      types: [{ value: "" }],
     },
   });
 
@@ -75,7 +86,7 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
 
   const onSubmit = async (data: typeFormSchema) => {
     console.log("dane z formularza :", data);
-    form.reset()
+    form.reset();
     onSuccess();
   };
 
@@ -86,11 +97,120 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
         className="flex flex-col gap-2"
       >
         <BrandNameField />
+        <Separator />
+        <VehicleTypesWrapper />
+        <Separator />
         <Button type={"submit"} disabled={isSubmitting}>
           {isSubmitting ? "Zapisywanie..." : "Zapisz"}
         </Button>
       </form>
     </FormProvider>
+  );
+}
+
+// =================================================================
+// wrapper dla komponentów ogarniających typ pojazdu
+// =================================================================
+//* potrzebuję tu przycisk dodawania nowego typu, label, pętlę, przycisk usuwania typu
+function VehicleTypesWrapper() {
+  const { control } = useFormContext<typeFormSchema>();
+  const { fields, append, remove } = useFieldArray({ control, name: "types" });
+  return (
+    <>
+      
+      <TypesHeader addType={append} />
+      <TypesMapLoop fields={fields} onRemove={remove} />
+      <ArrayErrorDisplay /> 
+    </>
+  );
+}
+// =================================================================
+// Types.Map() - loop
+// =================================================================
+interface TypesLoopProps {
+  fields: FieldArrayWithId<typeFormSchema, "types", "id">[];
+  onRemove: (index: number) => void;
+}
+function TypesMapLoop({ fields, onRemove }: TypesLoopProps) {
+  const { control } = useFormContext<typeFormSchema>();
+
+  return (
+    <>
+      {fields.map((item, index) => (
+        <FormField
+          key={item.id} // 1. Obowiązkowy klucz z ID od useFieldArray
+          control={control}
+          name={`types.${index}.value`} // 2. Indeks w nazwie pola działa prawidłowo
+          render={({ field }) => (
+            <FormItem className="flex">
+              <FormControl>
+                <Input placeholder="np. FH16" {...field} />
+              </FormControl>
+              <RemoveVehicleTypeButton onRemove={onRemove} index={index} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      ))}
+    </>
+  );
+}
+
+// =================================================================
+// przycisk usuwania typu pojazdu - komponent 7
+// =================================================================
+
+interface RemoveVehicleTypeButtonProps {
+  index: number;
+  onRemove: (index: number) => void;
+}
+
+const RemoveVehicleTypeButton = React.memo(
+  function RemoveVehicleTypeButton({ index, onRemove }: RemoveVehicleTypeButtonProps) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+        onClick={() => onRemove(index)}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    );
+  }
+)
+
+// =================================================================
+// TypesHeader
+// =================================================================
+
+interface TypeHeaderProps {
+  addType: (item: { value: string }) => void;
+}
+
+function TypesHeader({ addType }: TypeHeaderProps) {
+  const { clearErrors, control } = useFormContext<typeFormSchema>();
+  const buttonClick = () => {
+    addType({ value: "" });
+    clearErrors("types");
+  };
+  return (
+    <FormField
+      control={control}
+      name={"types"}
+      render={() => (
+        <FormItem>
+          <div className="flex items-center justify-between">
+            <FormLabel>Typ / typy pojazdu</FormLabel>
+            <Button type="button" size={"sm"} onClick={buttonClick}>
+              <CirclePlus />
+              <span>dodaj</span>
+            </Button>
+          </div>
+        </FormItem>
+      )}
+    />
   );
 }
 
@@ -114,5 +234,31 @@ function BrandNameField() {
         </FormItem>
       )}
     />
+  );
+}
+
+// =================================================================
+// wyświetlanie błędu o braku typów - komponent 8
+// =================================================================
+function ArrayErrorDisplay() {
+  const { control } = useFormContext<typeFormSchema>();
+
+  // 1. Używamy useFormState, aby ZAWSZE wymusić odświeżenie tego komponentu,
+  // gdy zmienią się błędy w tablicy "types"
+  const { errors } = useFormState({
+    control,
+    name: "types",
+  });
+
+  // 2. Wyłuskujemy błąd w zależności od wersji Zod/RHF
+  const typesError = errors.types;
+  const arrayError = typesError?.root?.message || typesError?.message;
+
+  if (!arrayError) return null;
+
+  return (
+    <p className="text-sm font-medium text-destructive animate-in fade-in-50 duration-200 mt-2">
+      {String(arrayError)} - array
+    </p>
   );
 }
