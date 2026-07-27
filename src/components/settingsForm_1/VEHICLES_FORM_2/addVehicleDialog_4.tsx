@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -36,10 +37,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { bodyType } from "../../../../constants/initialData";
+import { bodyType, Vehicle } from "../../../../constants/initialData";
+import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { toast } from "sonner";
 //todo =============================================================
-
-//* poprawić funkcję onSubmit
 //* przepisać kod jeszcze raz
 //todo =============================================================
 // =================================================================
@@ -57,8 +58,11 @@ export default function AddVehicleDialog_4({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>dodawanie pojazdu v.4</DialogTitle>
+          <DialogTitle>Dodawanie pojazdu v.4</DialogTitle>
         </DialogHeader>
+        <DialogDescription>
+          Aby dodać pojazd wypełnij wszystkie pola i wciśnij zapisz.
+        </DialogDescription>
         <Separator />
         <AddVehicleForm onSuccess={() => onOpenChange(false)} />
       </DialogContent>
@@ -83,6 +87,7 @@ const formSchema = z.object({
 type typeFormSchema = z.infer<typeof formSchema>;
 
 function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
+  const addVehiceToStore = useVehicalStorage2(s => s.addVehicle)
   const form = useForm<typeFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,7 +106,15 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
 
   const onSubmit = async (data: typeFormSchema) => {
     console.log("dane z formularza :", data);
+    const finalData: Vehicle = {
+      name: data.vehicleBrand,
+      types: data.types.map(t => t.value),
+      category: data.category,
+      id: uuidv4(),
+    }
+    addVehiceToStore(finalData)
     form.reset();
+    toast.success(`Dodano nowy pojazd ${data.vehicleBrand}`)
     onSuccess();
   };
 
@@ -241,7 +254,7 @@ function TypesHeader({ addType }: TypeHeaderProps) {
 // brand name field
 // =================================================================
 function BrandNameField() {
-  const { control } = useFormContext();
+  const { control } = useFormContext<typeFormSchema>();
 
   return (
     <FormField
