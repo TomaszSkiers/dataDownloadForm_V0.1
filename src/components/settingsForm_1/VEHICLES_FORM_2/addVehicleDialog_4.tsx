@@ -29,8 +29,16 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { bodyType } from "../../../../constants/initialData";
 //todo =============================================================
-//* dodać SELECTA z kategorią pojazdu
+
 //* poprawić funkcję onSubmit
 //* przepisać kod jeszcze raz
 //todo =============================================================
@@ -70,6 +78,7 @@ const formSchema = z.object({
   types: z
     .array(z.object({ value: z.string().min(1, "* wymagany min 1 znak") }))
     .min(1, "* wymagany min 1 typ pojazdu"),
+  category: z.string().min(1, "Wybierz kategorię pojazdu"),
 });
 type typeFormSchema = z.infer<typeof formSchema>;
 
@@ -79,6 +88,7 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
     defaultValues: {
       vehicleBrand: "",
       types: [{ value: "" }],
+      category: "",
     },
   });
 
@@ -104,6 +114,8 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
         <BrandNameField />
         <Separator />
         <VehicleTypesWrapper />
+        <Separator />
+        <VehicleKindSelect />
         <Separator />
         <Button type={"submit"} disabled={isSubmitting}>
           {isSubmitting ? "Zapisywanie..." : "Zapisz"}
@@ -166,7 +178,6 @@ function TypesMapLoop({ fields, onRemove }: TypesLoopProps) {
 // =================================================================
 // przycisk usuwania typu pojazdu - komponent 7
 // =================================================================
-
 interface RemoveVehicleTypeButtonProps {
   index: number;
   onRemove: (index: number) => void;
@@ -192,7 +203,6 @@ const RemoveVehicleTypeButton = React.memo(function RemoveVehicleTypeButton({
 // =================================================================
 // TypesHeader
 // =================================================================
-
 interface TypeHeaderProps {
   addType: (item: { value: string }) => void;
 }
@@ -272,7 +282,43 @@ function ArrayErrorDisplay() {
 
   if (!arrayError) return null;
 
+  return <Label className="text-destructive">{arrayError}</Label>;
+}
+
+// =================================================================
+// SELECT - ustawia rodzaj pojazdu - ciężarówka - autobus itp
+// =================================================================
+function VehicleKindSelect() {
+  const { control } = useFormContext<typeFormSchema>();
+
   return (
-    <Label className='text-destructive'>{arrayError}</Label>
+    <FormField
+      control={control}
+      name={"category"}
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>Kategoria pojazdu</FormLabel>
+            <FormControl>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full sm:w-1/2">
+                  <SelectValue placeholder="np: ciężarówka" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {bodyType.map((type) => {
+                    return (
+                      <SelectItem key={type.id} value={type.bodyName}>
+                        {type.description}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage/>
+          </FormItem>
+        );
+      }}
+    />
   );
 }
