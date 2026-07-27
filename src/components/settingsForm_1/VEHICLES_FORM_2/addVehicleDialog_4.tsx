@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { CirclePlus, Plus, Trash2 } from "lucide-react";
+import { CirclePlus, Trash2 } from "lucide-react";
 import z from "zod";
 import {
   FormControl,
@@ -14,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { OptimizedFormLabel } from "@/components/ui/labenNoRender";
 import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,11 +27,12 @@ import {
 } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 //todo =============================================================
-// poprawiłem renderowanie warunkowe, nie ma utraty efektu zaniku formy po zamknięciu - jeszcze potestować
-// poprawiłem renderowanie inputów w typach pojazdu - tylko jedno React.memo
-//* muszę przeanalizować jak dobierać się do błędów arrayError komponent
-//* wywalić nadmiarowe <FormField> z TypesHeader-a
+//* dodać SELECTA z kategorią pojazdu
+//* poprawić funkcję onSubmit
+//* przepisać kod jeszcze raz
 //todo =============================================================
 // =================================================================
 // main dialog AddVehicleDialog - 1
@@ -84,6 +84,11 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
 
   const { isSubmitting } = form.formState;
 
+  // //todo === debugger ============
+  // const {errors} = form.formState
+  // console.log(errors)
+  // //todo =========================
+
   const onSubmit = async (data: typeFormSchema) => {
     console.log("dane z formularza :", data);
     form.reset();
@@ -117,10 +122,9 @@ function VehicleTypesWrapper() {
   const { fields, append, remove } = useFieldArray({ control, name: "types" });
   return (
     <>
-      
       <TypesHeader addType={append} />
       <TypesMapLoop fields={fields} onRemove={remove} />
-      <ArrayErrorDisplay /> 
+      <ArrayErrorDisplay />
     </>
   );
 }
@@ -142,11 +146,14 @@ function TypesMapLoop({ fields, onRemove }: TypesLoopProps) {
           control={control}
           name={`types.${index}.value`} // 2. Indeks w nazwie pola działa prawidłowo
           render={({ field }) => (
-            <FormItem className="flex">
-              <FormControl>
-                <Input placeholder="np. FH16" {...field} />
-              </FormControl>
-              <RemoveVehicleTypeButton onRemove={onRemove} index={index} />
+            <FormItem className="flex flex-col">
+              <div className="flex gap-1">
+                <FormControl>
+                  <Input placeholder="np. FH16" {...field} />
+                </FormControl>
+                <RemoveVehicleTypeButton onRemove={onRemove} index={index} />
+              </div>
+
               <FormMessage />
             </FormItem>
           )}
@@ -165,21 +172,22 @@ interface RemoveVehicleTypeButtonProps {
   onRemove: (index: number) => void;
 }
 
-const RemoveVehicleTypeButton = React.memo(
-  function RemoveVehicleTypeButton({ index, onRemove }: RemoveVehicleTypeButtonProps) {
-    return (
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="h-9 w-9 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-        onClick={() => onRemove(index)}
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    );
-  }
-)
+const RemoveVehicleTypeButton = React.memo(function RemoveVehicleTypeButton({
+  index,
+  onRemove,
+}: RemoveVehicleTypeButtonProps) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="h-9 w-9 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+      onClick={() => onRemove(index)}
+    >
+      <Trash2 className="h-4 w-4" />
+    </Button>
+  );
+});
 
 // =================================================================
 // TypesHeader
@@ -190,27 +198,32 @@ interface TypeHeaderProps {
 }
 
 function TypesHeader({ addType }: TypeHeaderProps) {
-  const { clearErrors, control } = useFormContext<typeFormSchema>();
+  const {
+    control,
+    clearErrors,
+    // formState: { errors },
+  } = useFormContext<typeFormSchema>();
+
   const buttonClick = () => {
     addType({ value: "" });
     clearErrors("types");
   };
+
+  const { errors } = useFormState({
+    control,
+    name: "types",
+  });
+
+  const hasError = !!errors.types;
+
   return (
-    <FormField
-      control={control}
-      name={"types"}
-      render={() => (
-        <FormItem>
-          <div className="flex items-center justify-between">
-            <FormLabel>Typ / typy pojazdu</FormLabel>
-            <Button type="button" size={"sm"} onClick={buttonClick}>
-              <CirclePlus />
-              <span>dodaj</span>
-            </Button>
-          </div>
-        </FormItem>
-      )}
-    />
+    <div className="flex justify-between">
+      <Label className={cn(hasError && "text-destructive")}>Typ pojazdu</Label>
+      <Button type="button" size={"sm"} onClick={buttonClick}>
+        <CirclePlus />
+        <span>dodaj</span>
+      </Button>
+    </div>
   );
 }
 
@@ -252,13 +265,14 @@ function ArrayErrorDisplay() {
 
   // 2. Wyłuskujemy błąd w zależności od wersji Zod/RHF
   const typesError = errors.types;
+  console.log(typesError);
+
+  // 3. To jest fajne bo pokazuje błąd od razu gdy usunę typ i przy submicie też
   const arrayError = typesError?.root?.message || typesError?.message;
 
   if (!arrayError) return null;
 
   return (
-    <p className="text-sm font-medium text-destructive animate-in fade-in-50 duration-200 mt-2">
-      {String(arrayError)} - array
-    </p>
+    <Label className='text-destructive'>{arrayError}</Label>
   );
 }
