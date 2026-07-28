@@ -40,7 +40,7 @@ import {
   vehicleSchema,
 } from "../../../../constants/initialData";
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
-import { RemoveVehicleDialog } from "./removeVehicleDialog";
+import { RemoveVehicleDialog } from "./removeVehicleDialog_1";
 // import { AddVehicleDialog } from "./addVehicleDialog/addVehicleDialog";
 // import AddVehicleDialog_2 from "./addVehicleDialog2";
 import AddVehicleDialog_3 from "./addVehicleDialog_3";

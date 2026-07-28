@@ -14,19 +14,21 @@ import { PlusCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import { RemoveVehicleDialog_2 } from "./removeVehicleDialog_2";
+import AddVehicleDialog_5 from "./addVehicleDialog_5";
 // import AddVehicleDialog_3 from "./addVehicleDialog_3";
-import AddVehicleDialog_4 from "./addVehicleDialog_4";
+
 
 // =====================================================
 // Main
 // =====================================================
 export default function VehicleList_4() {
-  const isAddDialogOpen = useVehicleUiStore((state) => state.isAddDialogOpen);
-  const setOpenAddDialog = useVehicleUiStore((state) => state.setOpenAddDialog);
+  // const isAddDialogOpen = useVehicleUiStore((state) => state.isAddDialogOpen);
+  // const setOpenAddDialog = useVehicleUiStore((state) => state.setOpenAddDialog);
   const vehicleToDelete = useVehicleUiStore((state) => state.vehicleToDelete);
   const closeDeleteDialog = useVehicleUiStore(
     (state) => state.closeDeleteDialog,
   );
+
 
 
   return (
@@ -58,10 +60,13 @@ export default function VehicleList_4() {
       )}
 
       {/* Dialog dodawania nowego pojazdu */}
-      {/* tu była popraweczka */}
-        <AddVehicleDialog_4
-          open={isAddDialogOpen}
-          onOpenChange={setOpenAddDialog}
+      
+        <AddVehicleDialog_5
+          // open={isAddDialogOpen}
+          // onOpenChange={setOpenAddDialog}
+          //te propsy nie muszą być tu przekazywane
+          //wszystko można pobrać ze stora
+          //już w dialogu
         />
       
     </>

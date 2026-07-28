@@ -517,7 +517,7 @@ export const bodyType: BODY_TYPE[] = [
 
 export const INPUT_CHARS_LIMITER = {
   addVehicleDialog: {
-    brand: 30,
+    brand: 50,
     type: 20,
     category: 20,
   },

@@ -77,6 +77,10 @@ interface AddVehicleFormProps {
   onSuccess: () => void;
 }
 
+//ta funkcja onSuccess może być wzięta bezpośrednio ze stora
+//nie robimy prop drilling
+//* closeAddDialog
+
 const formSchema = z.object({
   vehicleBrand: z.string().min(1, "* wymagany min 1 znak"),
   types: z
@@ -87,7 +91,7 @@ const formSchema = z.object({
 type typeFormSchema = z.infer<typeof formSchema>;
 
 function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
-  const addVehiceToStore = useVehicalStorage2(s => s.addVehicle)
+  const addVehiceToStore = useVehicalStorage2((s) => s.addVehicle);
   const form = useForm<typeFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -108,13 +112,13 @@ function AddVehicleForm({ onSuccess }: AddVehicleFormProps) {
     console.log("dane z formularza :", data);
     const finalData: Vehicle = {
       name: data.vehicleBrand,
-      types: data.types.map(t => t.value),
+      types: data.types.map((t) => t.value),
       category: data.category,
       id: uuidv4(),
-    }
-    addVehiceToStore(finalData)
+    };
+    addVehiceToStore(finalData);
     form.reset();
-    toast.success(`Dodano nowy pojazd ${data.vehicleBrand}`)
+    toast.success(`Dodano nowy pojazd ${data.vehicleBrand}`);
     onSuccess();
   };
 
@@ -146,16 +150,24 @@ function VehicleTypesWrapper() {
   const { control } = useFormContext<typeFormSchema>();
   const { fields, append, remove } = useFieldArray({ control, name: "types" });
   return (
-    <>
-      <TypesHeader addType={append} />
+    <fieldset>
+      <div className="flex justify-between">
+        <legend>Typy pojazdu</legend>
+
+        <Button type="button" size="sm" onClick={() => append({ value: "" })}>
+          <CirclePlus aria-hidden="true" />
+          <span>Dodaj typ pojazdu</span>
+        </Button>
+      </div>
       <TypesMapLoop fields={fields} onRemove={remove} />
       <ArrayErrorDisplay />
-    </>
+    </fieldset>
   );
 }
 // =================================================================
 // Types.Map() - loop
 // =================================================================
+//todo tu pozmieniałem trochę doszło <FormLabel>
 interface TypesLoopProps {
   fields: FieldArrayWithId<typeFormSchema, "types", "id">[];
   onRemove: (index: number) => void;
@@ -172,6 +184,7 @@ function TypesMapLoop({ fields, onRemove }: TypesLoopProps) {
           name={`types.${index}.value`} // 2. Indeks w nazwie pola działa prawidłowo
           render={({ field }) => (
             <FormItem className="flex flex-col">
+              <FormLabel>Typ pojazdu {index + 1}</FormLabel>
               <div className="flex gap-1">
                 <FormControl>
                   <Input placeholder="np. FH16" {...field} />
@@ -205,10 +218,11 @@ const RemoveVehicleTypeButton = React.memo(function RemoveVehicleTypeButton({
       type="button"
       variant="ghost"
       size="icon"
+      aria-label={`Usuń typ pojazdu ${index + 1}`}
       className="h-9 w-9 text-destructive hover:bg-destructive hover:text-destructive-foreground"
       onClick={() => onRemove(index)}
     >
-      <Trash2 className="h-4 w-4" />
+      <Trash2 aria-hidden="true" className="h-4 w-4" />
     </Button>
   );
 });
@@ -241,7 +255,9 @@ function TypesHeader({ addType }: TypeHeaderProps) {
 
   return (
     <div className="flex justify-between">
-      <Label className={cn(hasError && "text-destructive")}>Typ pojazdu</Label>
+      <legend className={cn(hasError && "text-destructive")}>
+        Typy pojazdu
+      </legend>
       <Button type="button" size={"sm"} onClick={buttonClick}>
         <CirclePlus />
         <span>dodaj</span>
@@ -295,7 +311,12 @@ function ArrayErrorDisplay() {
 
   if (!arrayError) return null;
 
-  return <Label className="text-destructive">{arrayError}</Label>;
+  // return <Label className="text-destructive">{arrayError}</Label>;
+  return (
+    <p role="alert" className="text-destructive">
+      {arrayError}
+    </p>
+  );
 }
 
 // =================================================================
@@ -328,7 +349,7 @@ function VehicleKindSelect() {
                 </SelectContent>
               </Select>
             </FormControl>
-            <FormMessage/>
+            <FormMessage />
           </FormItem>
         );
       }}
