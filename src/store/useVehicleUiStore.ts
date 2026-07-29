@@ -4,6 +4,7 @@ import { Vehicle } from '../../constants/initialData'
 interface VehicleUiState {
   isAddDialogOpen: boolean;
   vehicleToDelete: Vehicle | null;
+ 
 
   openAddDialog: () => void;
   closeAddDialog: () => void;
@@ -16,6 +17,7 @@ interface VehicleUiState {
 export const useVehicleUiStore = create<VehicleUiState>((set) => ({
   isAddDialogOpen: false,
   vehicleToDelete: null,
+  
 
   openAddDialog: () => set({ isAddDialogOpen: true }),
   closeAddDialog: () => set({ isAddDialogOpen: false }),

@@ -46,7 +46,7 @@ const brandMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.brand;
 const typeMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.type;
 
 // =================================================================
-// main dialog AddVehicleDialog 
+// main dialog AddVehicleDialog
 // =================================================================
 
 export default function AddVehicleDialog_5() {
@@ -63,7 +63,7 @@ export default function AddVehicleDialog_5() {
           <DialogDescription>
             Dodawanie nowego pojazdu do bazy danych.
           </DialogDescription>
-        <Separator className="bg-chart-10" />
+          <Separator className="bg-chart-10" />
         </div>
 
         <AddVehicleForm />
@@ -109,7 +109,13 @@ function AddVehicleForm() {
     };
     addVehiceToStore(finalData);
     form.reset();
-    toast.success(`Dodano nowy pojazd ${data.vehicleBrand}`);
+    toast.success(
+      <span>
+        <span>Pojazd </span>
+        <span className="font-semibold text-chart-3">{data.vehicleBrand}</span>
+        <span> został dodany do bazy danych.</span>
+      </span>,
+    );
     onSuccess();
   };
   return (

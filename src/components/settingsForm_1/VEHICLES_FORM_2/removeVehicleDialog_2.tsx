@@ -8,44 +8,58 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useVehicalStorage2 } from "@/store/useVehicleStorage2"; // dostosuj ścieżkę do swojego sklepu
+import { Separator } from "@/components/ui/separator";
+import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { useVehicleUiStore } from "@/store/useVehicleUiStore";
+import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 
-// 1. Zaktualizowany interfejs propów
-interface RemoveVehicleProps {
-  id: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function RemoveVehicleDialog_2({
-  id,
-  open,
-  onOpenChange,
-}: RemoveVehicleProps) {
-  // Pobieramy funkcję do usuwania ze stoiska Zustand
-  const removeVehicle = useVehicalStorage2((s) => s.removeVehicle); // dostosuj nazwę metody
+export function RemoveVehicleDialog_2() {
+  const removeVehicle = useVehicalStorage2((s) => s.removeVehicle);
+  const vehicleToDelete = useVehicleUiStore((s) => s.vehicleToDelete);
+  const closeDeleteDialog = useVehicleUiStore((s) => s.closeDeleteDialog);
 
   const handleDelete = () => {
-    removeVehicle(id);
-    toast.success('Pojazd został usunięty')
-    onOpenChange(false); // zamykamy dialog po usunięciu
+    if (!vehicleToDelete) return;
+
+    removeVehicle(vehicleToDelete.id);
+    toast.success(
+      <span>
+        <span>Pojazd </span>
+        <span className="font-semibold text-chart-3">
+          {vehicleToDelete.name}
+        </span>
+        <span> został usunięty.</span>
+      </span>,
+    );
+    closeDeleteDialog();
   };
 
   return (
-    // 2. Przekazujemy open i onOpenChange bezpośrednio do AlertDialog
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog
+      open={Boolean(vehicleToDelete)}
+      onOpenChange={(open) => !open && closeDeleteDialog()}
+    >
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Czy na pewno chcesz usunąć ten pojazd?</AlertDialogTitle>
+        <AlertDialogHeader className="gap-0">
+          <AlertDialogTitle>
+            Czy na pewno chcesz usunąć ten pojazd?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            Ta operacja jest nieodwracalna. Pojazd zostanie usunięty z bazy danych.
+            Ta operacja jest nieodwracalna. Pojazd zostanie usunięty z bazy
+            danych.
           </AlertDialogDescription>
+
+          <Separator className="bg-chart-10 mt-2" />
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Anuluj</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete}>
-            Potwierdź
+          <AlertDialogCancel>
+            <X color="green" />
+            <span>Anuluj</span>
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} variant={"outline"}>
+            <Check color="red" />
+            <span>Potwierdź</span>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

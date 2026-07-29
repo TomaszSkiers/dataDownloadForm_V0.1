@@ -11,7 +11,7 @@ interface vehiclesState2 {
   addVehicle: (vehicle: Vehicle) => void;
   removeVehicle: (id: string) => void;
   updateVehicle: (id: string, updatedVehicle: Vehicle) => void;
-  // === sortowanie
+  // === sortowanie =====================
   activeSort: string;
   setActiveSort: (vehicleKind: string) => void,
   sortedVehicles: Vehicle[]
@@ -33,7 +33,7 @@ export const useVehicalStorage2 = create<vehiclesState2>()(
 // === sortowanie ===============================================================================================================================================
       activeSort: 'bus',
       setActiveSort: (vehKind) => set(() => ({activeSort: vehKind})),
-      sortedVehicles: [],
+      sortedVehicles: [], //* ? - czy to jest potrzebne? 
     }),
     {
       name: 'testowy-magazyn-pojazdow-2',

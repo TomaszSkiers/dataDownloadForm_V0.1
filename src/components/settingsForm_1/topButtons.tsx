@@ -14,7 +14,7 @@ interface Props {
 
 export default function TopFormButtons({ className }: Props) {
   return (
-    <div className={cn("mt-5 px-3 sm:px-0", className)}>
+    <div className={cn("mt-5 px-3 sm:px-0", className)} role="tablist">
       {SETTINGS_BUTTONS_LEFT.map((button) => (
         <FormButton
           key={button.id}
@@ -46,6 +46,7 @@ function FormButton({ id, icon, header }: FormButtonProps) {
 
   return (
     <Card
+      role="tab"
       className={cn(
         "cursor-pointer transition-all hover:bg-accent select-none flex-1 p-0",
         isActive

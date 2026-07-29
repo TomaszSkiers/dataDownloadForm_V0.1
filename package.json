@@ -13,6 +13,7 @@
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^5.2.2",
     "@preact/signals-react": "^3.10.2",
+    "@radix-ui/react-focus-scope": "^1.1.16",
     "@tanstack/react-form": "^1.33.0",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/zod-form-adapter": "^0.42.1",

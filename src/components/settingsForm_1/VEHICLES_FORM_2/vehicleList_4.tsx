@@ -10,34 +10,38 @@ import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
 import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
 import { bodyType, Vehicle } from "../../../../constants/initialData";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PenLine, PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import { RemoveVehicleDialog_2 } from "./removeVehicleDialog_2";
 import AddVehicleDialog_5 from "./addVehicleDialog_5";
-// import AddVehicleDialog_3 from "./addVehicleDialog_3";
-
+import { memo } from "react";
 
 // =====================================================
-// Main
+// TYPY DLA PROPSÓW
+// =====================================================
+interface VehiclesListProps {
+  vehicles: Vehicle[];
+}
+
+interface VehiclesCounterProps {
+  count: number;
+}
+
+// =====================================================
+// Główny komponent widoku listy pojazdów
 // =====================================================
 export default function VehicleList_4() {
-  // const isAddDialogOpen = useVehicleUiStore((state) => state.isAddDialogOpen);
-  // const setOpenAddDialog = useVehicleUiStore((state) => state.setOpenAddDialog);
-  const vehicleToDelete = useVehicleUiStore((state) => state.vehicleToDelete);
-  const closeDeleteDialog = useVehicleUiStore(
-    (state) => state.closeDeleteDialog,
-  );
-
-
+  // Wywołujemy hooka tylko raz, na najwyższym poziomie
+  const vehicles = useFilteredVehicles();
 
   return (
     <>
-      <Card className="flex-1">
+      <Card className="flex-1 rounded-md ">
         <CardHeader className="gap-3">
           <CardTitle>
             <span>Lista pojazdów: </span>
-            <VehiclesCounter />
+            <VehiclesCounter count={vehicles.length} />
           </CardTitle>
           <div className="flex justify-between">
             <SelectKindOfVehicle />
@@ -46,144 +50,158 @@ export default function VehicleList_4() {
         </CardHeader>
         <Separator />
         <CardContent className="relative flex-1">
-          <VehiclesListStart />
+          <VehiclesListStart vehicles={vehicles} />
         </CardContent>
       </Card>
 
-      {/* Dialog usuwania */}
-      {vehicleToDelete && (
-        <RemoveVehicleDialog_2
-          id={vehicleToDelete.id}
-          open={Boolean(vehicleToDelete)}
-          onOpenChange={(open) => !open && closeDeleteDialog()}
-        />
-      )}
+      {/* Dialog usuwania pojazdu */}
+      <RemoveVehicleDialog_2 />
 
       {/* Dialog dodawania nowego pojazdu */}
-      
-        <AddVehicleDialog_5
-          // open={isAddDialogOpen}
-          // onOpenChange={setOpenAddDialog}
-          //te propsy nie muszą być tu przekazywane
-          //wszystko można pobrać ze stora
-          //już w dialogu
-        />
-      
+      <AddVehicleDialog_5 />
     </>
   );
 }
 
 // =====================================================
-// SINGLE VEHICLE ROW
+// Pojedyncza karta pojazdu (Semantyczny <article> + <dl>)
 // =====================================================
 interface VehicleMapRowProps {
   vehicle: Vehicle;
 }
 
-function VehicleSingleRow({ vehicle }: VehicleMapRowProps) {
+const VehicleSingleRow = memo(function VehicleSingleRow({ vehicle }: VehicleMapRowProps) {
   const setVehicleToDelete = useVehicleUiStore(
     (state) => state.setVehicleToDelete,
   );
 
   return (
-    <Card className="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mx-5 bg-background">
-      <div className="flex-1 flex flex-col justify-center">
-        <CardHeader>
-          <span className="text-muted-foreground">marka pojazdu:</span>
-          <span className="font-extrabold">{vehicle.name}</span>
-        </CardHeader>
+    // <article> tworzy samodzielny, semantyczny blok dla pojedynczego wpisu
+    <article>
+      <Card className="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mx-5 bg-background ">
+        <div className="flex-1 flex flex-col justify-center">
+          <CardContent className="">
+            {/* Lista opisowa <dl> ze wszystkimi danymi w jednakowej strukturze */}
+            <dl className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1.5 text-sm">
+              {/* MARKA POJAZDU */}
+              <dt className="text-muted-foreground">Marka pojazdu:</dt>
+              <dd>
+                <h3 className="inline font-extrabold underline decoration-muted-foreground/40 underline-offset-4">
+                  {vehicle.name}
+                </h3>
+              </dd>
 
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">typ pojazdu:</span>
-            {vehicle.types.map((type, index) => (
-              <span key={index}>{type}</span>
-            ))}
-          </div>
+              {/* TYP POJAZDU */}
+              <dt className="text-muted-foreground">Typ pojazdu:</dt>
+              <dd className="font-medium">
+                {vehicle.types.map((type, index) => (
+                  <span
+                    key={`${vehicle.id}-type-${index}`}
+                    className="after:content-[',_'] last:after:content-none"
+                  >
+                    {type}
+                  </span>
+                ))}
+              </dd>
 
-          <span className="text-muted-foreground">kategoria pojazdu:</span>
-          <span>{vehicle.category}</span>
-          <br />
-          <span className="text-xs text-muted-foreground">
-            id: {vehicle.id}
-          </span>
-        </CardContent>
-      </div>
+              {/* KATEGORIA POJAZDU */}
+              <dt className="text-muted-foreground">Kategoria pojazdu:</dt>
+              <dd className="font-medium">{vehicle.category}</dd>
 
-      <div className="flex flex-col justify-center gap-5 p-4 md:flex-row">
-        <Button size="sm">edytuj</Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="destructive"
-          onClick={() => {
-            // Logujemy obiekt w konsoli przeglądarki i przekazujemy go do sklepu
-            console.log("Kliknięto usuń dla pojazdu:", vehicle);
-            setVehicleToDelete(vehicle);
-          }}
-        >
-          Usuń
-        </Button>
-      </div>
-    </Card>
+              {/* ID */}
+              <dt className="text-xs text-muted-foreground">ID:</dt>
+              <dd className="text-xs text-muted-foreground font-mono">
+                {vehicle.id}
+              </dd>
+            </dl>
+          </CardContent>
+        </div>
+
+        {/* Akcje dla wybranego pojazdu */}
+        {/* dołożyc ikony i przyciski zrobić na outline */}
+        <div className="flex flex-col justify-center gap-3 p-4 md:flex-row md:items-center">
+          <Button size="sm" variant="outline" className="dark:bg-background">
+            <PenLine className="text-chart-2" />
+            Edytuj
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              // console.log("Kliknięto usuń dla pojazdu:", vehicle);
+              setVehicleToDelete(vehicle);
+            }}
+            className="dark:bg-background"
+          >
+            <Trash2 className="text-chart-5" />
+            <span>Usuń</span>
+          </Button>
+        </div>
+      </Card>
+    </article>
   );
-}
+});
 
 // =====================================================
-// vehicles list .map() wrapper
+// Semantyczne mapowanie listy (pętla ul -> li)
 // =====================================================
-function VahiclesListMapWrapper() {
-  const vehicles = useFilteredVehicles();
+function VehiclesListMapWrapper({ vehicles }: VehiclesListProps) {
   return (
-    <>
+    // Używamy natywnego znacznika <ul> wyzerowanego z domyślnego stylowania listy
+    <ul className="flex flex-col gap-3 p-0 m-0 list-none">
       {vehicles.map((vehicle) => (
-        <VehicleSingleRow vehicle={vehicle} key={vehicle.id} />
+        // Każdy element pętli otaczamy znacznikiem <li>
+        <li key={vehicle.id}>
+          <VehicleSingleRow vehicle={vehicle} />
+        </li>
       ))}
-    </>
+    </ul>
   );
 }
 
 // =====================================================
-// VEHICLE LIST WRAPPER
+// Kontener listy pojazdów (obsługa pustego stanu)
 // =====================================================
-function VehiclesListStart() {
-  const vehicles = useFilteredVehicles();
-
+function VehiclesListStart({ vehicles }: VehiclesListProps) {
   return (
     <div className="absolute inset-0 flex flex-col gap-3 overflow-auto">
       {vehicles.length === 0 ? (
-        <div className="mx-auto text-2xl font-extrabold text-center">
-          brak danych o pojazdach
+        <div className="mx-auto my-auto text-2xl font-extrabold text-center">
+          Brak danych o pojazdach
           <br />
-          <span className="text-sm text-muted-foreground">
-            kliknij dodaj pojazd
+          <span className="text-sm font-normal text-muted-foreground">
+            Kliknij „Dodaj pojazd”, aby utworzyć nowy wpis.
           </span>
         </div>
       ) : (
-        <VahiclesListMapWrapper />
+        <VehiclesListMapWrapper vehicles={vehicles} />
       )}
     </div>
   );
 }
 
 // =====================================================
-// AddVehicleButton - <CardHeader>
+// Przycisk dodawania nowego pojazdu
 // =====================================================
 function AddVehicleButton() {
-  // 1. Pobieramy funkcję otwierającą ze sklepu UI
   const openAddDialog = useVehicleUiStore((state) => state.openAddDialog);
 
   return (
-    // 2. Podpinamy ją pod onClick
-    <Button type="button" onClick={openAddDialog}>
-      <PlusCircle className="text-chart-1" />
-      <span>dodaj pojazd</span>
+    <Button
+      type="button"
+      variant={"outline"}
+      onClick={openAddDialog}
+      className="dark:bg-background"
+    >
+      <PlusCircle className="text-chart-2" />
+      <span>Dodaj pojazd</span>
     </Button>
   );
 }
 
 // =====================================================
-// Select - wybierz rodzaj pojazdu - <CardHeader>
+// Select filtrujący rodzaj pojazdu
 // =====================================================
 function SelectKindOfVehicle() {
   const kindOfVehicle = useVehicalStorage2((state) => state.activeSort);
@@ -191,8 +209,8 @@ function SelectKindOfVehicle() {
 
   return (
     <Select value={kindOfVehicle} onValueChange={setKindOfVehicle}>
-      <SelectTrigger>
-        <SelectValue placeholder="wybierz kategorię" />
+      <SelectTrigger className="dark:bg-background">
+        <SelectValue placeholder="Wybierz kategorię" />
       </SelectTrigger>
       <SelectContent position={"popper"}>
         {bodyType.map((type) => (
@@ -206,10 +224,8 @@ function SelectKindOfVehicle() {
 }
 
 // =====================================================
-// Licznik pojazdów
+// Licznik skompresowany w funkcji
 // =====================================================
-function VehiclesCounter() {
-  const filteredVehiclesCounter = useFilteredVehicles().length;
-
-  return <> {filteredVehiclesCounter}</>;
+function VehiclesCounter({ count }: VehiclesCounterProps) {
+  return <span>{count}</span>;
 }
