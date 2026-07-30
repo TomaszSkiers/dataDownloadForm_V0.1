@@ -16,6 +16,17 @@ import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import { RemoveVehicleDialog_2 } from "./removeVehicleDialog_2";
 import AddVehicleDialog_5 from "./addVehicleDialog_5";
 import { memo } from "react";
+import EditVehicleDialog from "./editVehicleDialog_1";
+
+//todo =================================================
+  //* dodać isSubmiting - tak dla nauki bo efektu to nie ma 
+  //* dodać zabezpieczeneia isSubmitting 
+  //* dodać zabezpieczenia vehicles.length === 0
+  //* zrobić i pętla 
+  //wszystko jest na ai trzeba poszukac 
+
+  //* przerobić Dodawanie pojazdu z <Dialog> na <Card>
+//todo =================================================
 
 // =====================================================
 // TYPY DLA PROPSÓW
@@ -34,7 +45,7 @@ interface VehiclesCounterProps {
 export default function VehicleList_4() {
   // Wywołujemy hooka tylko raz, na najwyższym poziomie
   const vehicles = useFilteredVehicles();
-
+  const overlayOpen = useVehicleUiStore((s) => s.isAddDialogOpen)
   return (
     <>
       <Card className="flex-1 rounded-md ">
@@ -47,6 +58,7 @@ export default function VehicleList_4() {
             <SelectKindOfVehicle />
             <AddVehicleButton />
           </div>
+          
         </CardHeader>
         <Separator />
         <CardContent className="relative flex-1">
@@ -59,6 +71,12 @@ export default function VehicleList_4() {
 
       {/* Dialog dodawania nowego pojazdu */}
       <AddVehicleDialog_5 />
+
+      {/* Dialog edytowania pojazdu */}
+      <EditVehicleDialog />
+
+      {/* Overlay */}
+      {overlayOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs"></div>)}
     </>
   );
 }
@@ -70,10 +88,13 @@ interface VehicleMapRowProps {
   vehicle: Vehicle;
 }
 
-const VehicleSingleRow = memo(function VehicleSingleRow({ vehicle }: VehicleMapRowProps) {
+const VehicleSingleRow = memo(function VehicleSingleRow({
+  vehicle,
+}: VehicleMapRowProps) {
   const setVehicleToDelete = useVehicleUiStore(
     (state) => state.setVehicleToDelete,
   );
+  const openEditDialog = useVehicleUiStore((s) => s.openEditDialog);
 
   return (
     // <article> tworzy samodzielny, semantyczny blok dla pojedynczego wpisu
@@ -120,7 +141,12 @@ const VehicleSingleRow = memo(function VehicleSingleRow({ vehicle }: VehicleMapR
         {/* Akcje dla wybranego pojazdu */}
         {/* dołożyc ikony i przyciski zrobić na outline */}
         <div className="flex flex-col justify-center gap-3 p-4 md:flex-row md:items-center">
-          <Button size="sm" variant="outline" className="dark:bg-background">
+          <Button
+            size="sm"
+            variant="outline"
+            className="dark:bg-background"
+            onClick={openEditDialog}
+          >
             <PenLine className="text-chart-2" />
             Edytuj
           </Button>
@@ -229,3 +255,5 @@ function SelectKindOfVehicle() {
 function VehiclesCounter({ count }: VehiclesCounterProps) {
   return <span>{count}</span>;
 }
+
+

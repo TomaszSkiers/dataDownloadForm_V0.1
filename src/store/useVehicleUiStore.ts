@@ -12,6 +12,12 @@ interface VehicleUiState {
 
   setVehicleToDelete: (vehicle: Vehicle | null) => void;
   closeDeleteDialog: () => void;
+
+  // edit ----
+  isEditDialogOpen: boolean;
+  closeEditDialog: () => void;
+  setOpenEditDialog: (open: boolean) => void
+  openEditDialog: ()=> void
 }
 
 export const useVehicleUiStore = create<VehicleUiState>((set) => ({
@@ -27,4 +33,10 @@ export const useVehicleUiStore = create<VehicleUiState>((set) => ({
   // Poprawiono: dodano set()
   setVehicleToDelete: (vehicle) => set({ vehicleToDelete: vehicle }),
   closeDeleteDialog: () => set({ vehicleToDelete: null }),
+
+  // Edit dialog
+  isEditDialogOpen: false,
+  closeEditDialog: () => set({isEditDialogOpen: false}),
+  setOpenEditDialog: (open) => set({isEditDialogOpen: open}),
+  openEditDialog: () => set({isEditDialogOpen: true})
 }))
