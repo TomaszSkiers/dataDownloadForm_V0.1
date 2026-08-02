@@ -19,13 +19,7 @@ import { memo } from "react";
 import EditVehicleDialog from "./editVehicleDialog_1";
 
 //todo =================================================
-  //* dodać isSubmiting - tak dla nauki bo efektu to nie ma 
-  //* dodać zabezpieczeneia isSubmitting 
-  //* dodać zabezpieczenia vehicles.length === 0
-  //* zrobić i pętla 
-  //wszystko jest na ai trzeba poszukac 
-
-  //* przerobić Dodawanie pojazdu z <Dialog> na <Card>
+//* przepisać
 //todo =================================================
 
 // =====================================================
@@ -45,20 +39,19 @@ interface VehiclesCounterProps {
 export default function VehicleList_4() {
   // Wywołujemy hooka tylko raz, na najwyższym poziomie
   const vehicles = useFilteredVehicles();
-  const overlayOpen = useVehicleUiStore((s) => s.isAddDialogOpen)
+
   return (
     <>
       <Card className="flex-1 rounded-md ">
         <CardHeader className="gap-3">
-          <CardTitle>
-            <span>Lista pojazdów: </span>
+          <CardTitle className="flex gap-0.5">
+            <h2>Lista pojazdów:</h2>
             <VehiclesCounter count={vehicles.length} />
           </CardTitle>
           <div className="flex justify-between">
             <SelectKindOfVehicle />
             <AddVehicleButton />
           </div>
-          
         </CardHeader>
         <Separator />
         <CardContent className="relative flex-1">
@@ -74,9 +67,6 @@ export default function VehicleList_4() {
 
       {/* Dialog edytowania pojazdu */}
       <EditVehicleDialog />
-
-      {/* Overlay */}
-      {overlayOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs"></div>)}
     </>
   );
 }
@@ -255,5 +245,3 @@ function SelectKindOfVehicle() {
 function VehiclesCounter({ count }: VehiclesCounterProps) {
   return <span>{count}</span>;
 }
-
-

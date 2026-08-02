@@ -1,15 +1,16 @@
 "use client";
-import TopFormButtons from "@/components/settingsForm_1/topButtons";
-import SettingsContextContainer from "@/components/settingsForm_1/settingsContextContainer";
+// import TopFormButtons from "@/components/settingsForm_1/topButtons";
+// import SettingsContextContainer from "@/components/settingsForm_1/settingsContextContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useViewStore } from "@/store/useViewStore";
 import { SETTINGS_BUTTONS_LEFT } from "../../../constants/initialData";
 import TechniciansList from "@/components/settingsForm_1/techniciansForms/techniciansList";
 import WorkshopList2 from "@/components/settingsForm_1/WORKSHOP-FORM-2/workshopList2";
-import VehicleList_4 from "@/components/settingsForm_1/VEHICLES_FORM_2/vehicleList_4";
+// import VehicleList_4 from "@/components/settingsForm_1/VEHICLES_FORM_2/vehicleList_4";
 import ReasonsList from "@/components/settingsForms/reasons";
 import PowerOff from "@/components/settingsForm_1/power/settingsPowerOff";
-import { FocusScope } from "@radix-ui/react-focus-scope";
+
+import VehicleList_5 from "@/components/settingsForm_1/VEHICLES_FORM_2/vehicleList_5";
 // import TechniciansList from "../settingsForm_1/techniciansForms/techniciansList";
 // import PowerOff from "./power/settingsPowerOff";
 // import WorkshopList2 from "./WORKSHOP-FORM-2/workshopList2";
@@ -82,7 +83,7 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="pojazdy" className="flex-1 mt-0 flex">
-          <VehicleList_4 />
+          <VehicleList_5/>
         </TabsContent>
 
         <TabsContent value="powody" className="flex-1 mt-0">

@@ -31,7 +31,7 @@ export const useVehicalStorage2 = create<vehiclesState2>()(
       updateVehicle: (id, updatedVehicle) => set((state) => ({vehicleList: state.vehicleList.map((vehicle) => vehicle.id === id ? updatedVehicle : vehicle)})),
 
 // === sortowanie ===============================================================================================================================================
-      activeSort: 'bus',
+      activeSort: 'truck',
       setActiveSort: (vehKind) => set(() => ({activeSort: vehKind})),
       sortedVehicles: [], //* ? - czy to jest potrzebne? 
     }),

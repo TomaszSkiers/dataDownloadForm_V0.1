@@ -4,7 +4,8 @@ import { Vehicle } from '../../constants/initialData'
 interface VehicleUiState {
   isAddDialogOpen: boolean;
   vehicleToDelete: Vehicle | null;
- 
+  vehicleToEdit: Vehicle | null;
+
 
   openAddDialog: () => void;
   closeAddDialog: () => void;
@@ -17,13 +18,16 @@ interface VehicleUiState {
   isEditDialogOpen: boolean;
   closeEditDialog: () => void;
   setOpenEditDialog: (open: boolean) => void
-  openEditDialog: ()=> void
+  openEditDialog: () => void
+  closeEditDialogNull: () => void;
+  setVehicleToEditNull: (vehicle: Vehicle) => void;
 }
 
 export const useVehicleUiStore = create<VehicleUiState>((set) => ({
   isAddDialogOpen: false,
   vehicleToDelete: null,
-  
+  vehicleToEdit: null,
+
 
   openAddDialog: () => set({ isAddDialogOpen: true }),
   closeAddDialog: () => set({ isAddDialogOpen: false }),
@@ -36,7 +40,9 @@ export const useVehicleUiStore = create<VehicleUiState>((set) => ({
 
   // Edit dialog
   isEditDialogOpen: false,
-  closeEditDialog: () => set({isEditDialogOpen: false}),
-  setOpenEditDialog: (open) => set({isEditDialogOpen: open}),
-  openEditDialog: () => set({isEditDialogOpen: true})
+  closeEditDialog: () => set({ isEditDialogOpen: false }),
+  setOpenEditDialog: (open) => set({ isEditDialogOpen: open }),
+  openEditDialog: () => set({ isEditDialogOpen: true }),
+  closeEditDialogNull: ()=> set({vehicleToEdit: null}),
+  setVehicleToEditNull: (vehicle) => set({vehicleToEdit: vehicle})
 }))

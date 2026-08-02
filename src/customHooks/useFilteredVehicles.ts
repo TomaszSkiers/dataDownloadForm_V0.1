@@ -29,7 +29,9 @@ import { useMemo } from "react";
  * ```
  */
 
-
+//todo ==========================================
+  // 'pl' przy konfiguracji wielojezykowej apce to do poprawy
+//todo ==========================================
 
 export const useFilteredVehicles = () => {
 
@@ -41,7 +43,7 @@ export const useFilteredVehicles = () => {
       (vehicle) => vehicle.category === activeSort
     )
 
-    return [...filtered].sort((a, b) => {
+    return filtered.sort((a, b) => {
       return a.name.localeCompare(b.name, 'pl')
     })
   }, [vehicleList, activeSort])

@@ -45,10 +45,6 @@ import { INPUT_CHARS_LIMITER } from "../../../../constants/initialData";
 const brandMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.brand;
 const typeMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.type;
 
-//todo =============================================================
-    //* przerobić z <Dialog> na <Card> bo <Select> odpierdala
-//todo =============================================================
-
 // =================================================================
 // main dialog AddVehicleDialog
 // =================================================================
@@ -58,8 +54,8 @@ export default function AddVehicleDialog_5() {
   const onOpenChange = useVehicleUiStore((state) => state.setOpenAddDialog);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent >
         <div className="flex flex-col gap-0.5">
           <DialogHeader>
             <DialogTitle>Dodaj pojazd v.5</DialogTitle>
@@ -69,7 +65,6 @@ export default function AddVehicleDialog_5() {
           </DialogDescription>
           <Separator className="bg-chart-10" />
         </div>
-
         <AddVehicleForm />
       </DialogContent>
     </Dialog>
