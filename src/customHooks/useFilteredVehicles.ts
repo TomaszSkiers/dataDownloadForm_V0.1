@@ -1,4 +1,4 @@
-import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
 import { useMemo } from "react";
 
 /**
@@ -35,8 +35,8 @@ import { useMemo } from "react";
 
 export const useFilteredVehicles = () => {
 
-  const activeSort = useVehicalStorage2(s => s.activeSort)
-  const vehicleList = useVehicalStorage2(s => s.vehicleList)
+  const activeSort = useVehiclesStorage2(s => s.activeSort)
+  const vehicleList = useVehiclesStorage2(s => s.vehicleList)
 
   const processedVehicles = useMemo(() => {
     const filtered = vehicleList.filter(

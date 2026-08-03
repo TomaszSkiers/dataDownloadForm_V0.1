@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
-import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
 import { bodyType, Vehicle } from "../../../../constants/initialData";
 import { Button } from "@/components/ui/button";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
@@ -193,8 +193,8 @@ function AddVehicleButton() {
 // Select kind of vehicle
 // =====================================================
 function SelectKindOfVehicle() {
-  const kindOfVehicle = useVehicalStorage2((state) => state.activeSort);
-  const setKindOfVehicle = useVehicalStorage2((state) => state.setActiveSort);
+  const kindOfVehicle = useVehiclesStorage2((state) => state.activeSort);
+  const setKindOfVehicle = useVehiclesStorage2((state) => state.setActiveSort);
 
   return (
     <Select value={kindOfVehicle} onValueChange={setKindOfVehicle}>

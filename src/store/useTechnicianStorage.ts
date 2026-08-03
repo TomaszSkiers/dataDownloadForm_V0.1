@@ -64,7 +64,7 @@ export const useTechniciansStore = create<techniciansState>()(
             return true
           })
           if (validatedList.length !== state.technicianList.length) {
-            console.warn(`Uxunięto ${state.technicianList.length - validatedList.length} błędnych rekordów`)
+            console.warn(`Usunięto ${state.technicianList.length - validatedList.length} błędnych rekordów`)
             state.setTechnicians(validatedList)
           }
         }

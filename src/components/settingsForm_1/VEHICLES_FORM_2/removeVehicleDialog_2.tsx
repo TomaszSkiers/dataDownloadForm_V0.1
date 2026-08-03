@@ -9,13 +9,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 
 export function RemoveVehicleDialog_2() {
-  const removeVehicle = useVehicalStorage2((s) => s.removeVehicle);
+  const removeVehicle = useVehiclesStorage2((s) => s.removeVehicle);
   const vehicleToDelete = useVehicleUiStore((s) => s.vehicleToDelete);
   const closeDeleteDialog = useVehicleUiStore((s) => s.closeDeleteDialog);
 

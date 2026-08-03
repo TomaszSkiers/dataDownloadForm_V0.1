@@ -1,4 +1,4 @@
-import { Settings, User, LogOut, MoreHorizontal } from "lucide-react";
+import { CirclePlus, Trash2 } from "lucide-react";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import {
   Select,
@@ -26,17 +26,23 @@ import {
   Controller,
   useFormContext,
   FormProvider,
+  useFieldArray,
+  FieldArrayWithId,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import React from "react";
+import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
+import { toast } from "sonner";
 
 const brandMaxLength = INPUT_CHARS_LIMITER.editVehicleDialog.brand;
+const typeMaxLength = INPUT_CHARS_LIMITER.editVehicleDialog.type;
 
-//todo ==========================================================
-// utworzyć pole vehicle brand nowy komponenty Fiel w shadui
-//todo ==========================================================
+//todo =============================================================
+//* poprawić literówki w kodzie, przepisać na czysto, podzielić na pliki
+//todo =============================================================
 
 // =================================================================
 // main dialog EditVehicle
@@ -76,31 +82,186 @@ interface EditVehicleProps {
 }
 const EditSchema = z.object({
   vehicleBrand: z.string().min(1, "* wymagany min 1 znak").max(brandMaxLength),
+  vehicleTypes: z.array(
+    z.object({
+      value: z.string().min(1, "* wymagany min 1 znak").max(typeMaxLength),
+    }),
+  ),
+  vehicleKind: z.string().min(1, "* rodzaj pojazdu jest wymagany"),
 });
 type EditVehicleTypes = z.infer<typeof EditSchema>;
 
 function EditVehicleForm({ vehicle }: EditVehicleProps) {
+  const save = useVehiclesStorage2((s) => s.updateVehicle);
+  const onSuccess = useVehicleUiStore((s) => s.closeEditDialogNull);
   const form = useForm<EditVehicleTypes>({
     resolver: zodResolver(EditSchema),
     defaultValues: {
       vehicleBrand: vehicle.name,
+      vehicleTypes: vehicle.types.map((type) => ({ value: type })),
+      vehicleKind: vehicle.category,
     },
   });
 
   const onSubmit = (data: EditVehicleTypes) => {
-    console.log("edit Form: ", data);
+    try {
+      const finalData: Vehicle = {
+        id: vehicle.id,
+        name: data.vehicleBrand,
+        types: data.vehicleTypes.map((type) => type.value),
+        category: data.vehicleKind,
+      };
+
+      save(vehicle.id, finalData);
+
+      toast.success(
+        <span>
+          Pojazd{" "}
+          <span className="font-semibold text-chart-3">
+            {data.vehicleBrand}
+          </span>{" "}
+          został zaktualizowany
+        </span>,
+      );
+
+      onSuccess();
+    } catch (error) {
+      console.error("Błąd zapisu pojazdu:", error);
+      toast.error("Nie udało się zapisać pojazdu. Spróbuj ponownie.");
+    }
   };
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-3"
+      >
         <VehicleBrandInput />
-        <Button variant={"outline"}>Zapisz</Button>
+        <Separator className="bg-chart-10" />
+        <VehicleTypesWrapper />
+        <Separator className="bg-chart-10" />
+        <VehicleKindSelect />
+        <Separator className="bg-chart-10" />
+        <Button
+          type="submit"
+          variant={"outline"}
+          disabled={form.formState.isSubmitting}
+        >
+          Zapisz
+        </Button>
       </form>
     </FormProvider>
   );
 }
+// =================================================================
+// vehicle types wrapper
+// =================================================================
+function VehicleTypesWrapper() {
+  const { control } = useFormContext<EditVehicleTypes>();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "vehicleTypes",
+  });
 
+  //todo
+  console.log("renderuje sie VehicleTypeWrapper");
+
+  return (
+    <fieldset className="">
+      <div className="flex justify-between mb-2">
+        <legend className="flex items-center gap-2 text-sm leading-none font-medium select-none">
+          Typy pojazdu:
+        </legend>
+        <Button
+          type="button"
+          size={"sm"}
+          variant={"outline"}
+          onClick={() => append({ value: "" })}
+        >
+          <CirclePlus aria-hidden="true" color="green" />
+          <span>Dodaj typ</span>
+        </Button>
+      </div>
+      <TypesMapLoop fields={fields} onRemove={remove} />
+    </fieldset>
+  );
+}
+// =================================================================
+// Types.Map() - loop
+// =================================================================
+
+interface TypesLoopProps {
+  fields: FieldArrayWithId<EditVehicleTypes, "vehicleTypes", "id">[];
+  onRemove: (index: number) => void;
+}
+
+function TypesMapLoop({ fields, onRemove }: TypesLoopProps) {
+  return (
+    <ul className="flex flex-col gap-2">
+      {fields.map((item, index) => (
+        <li key={item.id} className="flex flex-col gap-1">
+          <Separator />
+          <VehicleRow
+            index={index}
+            fieldsLength={fields.length}
+            onRemove={onRemove}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+// =================================================================
+// vehicleBrand field
+// =================================================================
+interface VehicleRowProps {
+  index: number;
+  onRemove: (index: number) => void;
+  fieldsLength: number;
+}
+function VehicleRow({ index, onRemove, fieldsLength }: VehicleRowProps) {
+  const { control } = useFormContext<EditVehicleTypes>();
+
+  return (
+    <Controller
+      control={control}
+      name={`vehicleTypes.${index}.value`}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid} className="gap-1 p-2">
+          <FieldLabel className="text-xs flex justify-between">
+            <span>Typ pojazdu {index + 1}</span>
+            <span className="text-muted-foreground text-xs">
+              {field.value.length}/{typeMaxLength}
+            </span>
+          </FieldLabel>
+          <div className="flex gap-1">
+            <Input
+              {...field}
+              placeholder="np: FH16"
+              aria-invalid={fieldState.invalid}
+              maxLength={typeMaxLength}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={`Usuń typ pojazdu ${index + 1}`}
+              className="h-9 w-9 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              onClick={() => onRemove(index)}
+              disabled={fieldsLength === 1}
+            >
+              <Trash2 aria-hidden="true" className="h-4 w-4" />
+            </Button>
+          </div>
+          {fieldState.invalid && (
+            <FieldError className="text-xs" errors={[fieldState.error]} />
+          )}
+        </Field>
+      )}
+    />
+  );
+}
 // =================================================================
 // vehicleBrand field
 // =================================================================
@@ -112,15 +273,57 @@ function VehicleBrandInput() {
       control={control}
       name="vehicleBrand"
       render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={field.name}>Marka pojazdu</FieldLabel>
+        <Field data-invalid={fieldState.invalid} className="gap-1">
+          <FieldLabel htmlFor={field.name} className="flex justify-between">
+            <span>Marka pojazdu</span>
+            <span className="text-muted-foreground text-xs">
+              {field.value.length}/{brandMaxLength}
+            </span>
+          </FieldLabel>
           <Input
             id={field.name}
             {...field}
             aria-invalid={fieldState.invalid}
             placeholder="np: Volvo"
+            maxLength={brandMaxLength}
           />
-          {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  );
+}
+// =================================================================
+// select vehicle kind - this field set kind of vehicle
+// =================================================================
+function VehicleKindSelect() {
+  const { control } = useFormContext<EditVehicleTypes>();
+  return (
+    <Controller
+      control={control}
+      name={"vehicleKind"}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid} className="gap-1">
+          <FieldLabel htmlFor={field.name}>
+            Wybierz kategorię pojazdu
+          </FieldLabel>
+          <Select
+            name={field.name}
+            value={field.value}
+            onValueChange={field.onChange}
+          >
+            <SelectTrigger id={field.name} aria-invalid={fieldState.invalid}>
+              <SelectValue placeholder="np: ciężarówka" />
+            </SelectTrigger>
+            <SelectContent position={"popper"}>
+              {bodyType.map((kind) => (
+                <SelectItem key={kind.id} value={kind.bodyName}>
+                  {kind.description}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
       )}
     />

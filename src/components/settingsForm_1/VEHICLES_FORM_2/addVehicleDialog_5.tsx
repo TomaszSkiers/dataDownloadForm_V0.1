@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { bodyType, Vehicle } from "../../../../constants/initialData";
-import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
+import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
 import { toast } from "sonner";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import { INPUT_CHARS_LIMITER } from "../../../../constants/initialData";
@@ -87,7 +87,7 @@ const addVehicleFormSchema = z.object({
 type AddVehicleFormValues = z.infer<typeof addVehicleFormSchema>;
 
 function AddVehicleForm() {
-  const addVehiceToStore = useVehicalStorage2((s) => s.addVehicle);
+  const addVehiceToStore = useVehiclesStorage2((s) => s.addVehicle);
   const onSuccess = useVehicleUiStore((s) => s.closeAddDialog);
   const form = useForm<AddVehicleFormValues>({
     resolver: zodResolver(addVehicleFormSchema),
@@ -99,7 +99,7 @@ function AddVehicleForm() {
   });
 
   const onSubmit = (data: AddVehicleFormValues) => {
-    console.log("dane z formularza :", data);
+    // console.log("dane z formularza :", data);
     const finalData: Vehicle = {
       name: data.vehicleBrand,
       types: data.vehicleTypes.map((t) => t.value),
