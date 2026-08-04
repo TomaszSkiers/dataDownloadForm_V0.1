@@ -5,10 +5,10 @@ import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
 import { WORKSHOP } from "../../../constants/initialData";
 import React from "react";
-import AddWorkshopDialog_3 from "./addWorkshopDialog";
+import AddWorkshopDialog from "./addWorkshopDialog";
 
 //todo ==================================================
-//* robię dialog dodaj punkt
+//* to do RemoveWorkshopDialog
 //todo ==================================================
 
 interface WorkshopsListProps {
@@ -32,7 +32,7 @@ export default function WorkshopList_3() {
           <WorkshopsListMain workshopsList={workshopList} />
         </CardContent>
       </Card>
-      <AddWorkshopDialog_3 />
+      <AddWorkshopDialog />
     </>
   );
 }

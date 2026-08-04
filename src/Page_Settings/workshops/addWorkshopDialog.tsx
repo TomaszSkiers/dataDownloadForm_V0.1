@@ -86,7 +86,7 @@ function AddWorkshopForm() {
       addWorkshopToStore(finalData);
       toast.success(
         <span>
-          <span>Warsztat</span>
+          <span>Warsztat </span>
           <span className="font-semibold text-chart-3">
             {data.workshopName}
           </span>
