@@ -1,4 +1,4 @@
-import { CirclePlus, Trash2 } from "lucide-react";
+import { CirclePlus, Save, Trash2 } from "lucide-react";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
 import {
   Select,
@@ -148,7 +148,8 @@ function EditVehicleForm({ vehicle }: EditVehicleProps) {
           variant={"outline"}
           disabled={form.formState.isSubmitting}
         >
-          Zapisz
+          <Save color="green" />
+          <span>zapisz</span>
         </Button>
       </form>
     </FormProvider>

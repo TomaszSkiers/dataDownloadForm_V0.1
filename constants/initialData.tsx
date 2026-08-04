@@ -477,12 +477,12 @@ export const techniciansMock: Technician[] = [
 // ===============================================================
 // SCHEMAT OBIEKTU WARSZTAT / OBJECT WORKSHOP SCHEMA
 // ===============================================================
-
+//todo schemat nie pasuje do tego z formularza
 export const WORKSHOP_SCHEMA = z.object({
   id: z.string(),
   name: z
     .string()
-    .min(3, "Nazwa warsztatu jest wymagana, min 3 znaki")
+    .min(1, "Nazwa warsztatu jest wymagana, min 3 znaki")
     .max(100, "maksymalnie można wpisać 50 znaków"),
   address: z
     .string()

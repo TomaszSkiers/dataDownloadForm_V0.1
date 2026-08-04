@@ -56,15 +56,14 @@ export default function AddVehicleDialog() {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <div className="flex flex-col gap-0.5">
-          <DialogHeader>
-            <DialogTitle>Dodaj pojazd v.5</DialogTitle>
-          </DialogHeader>
+        <DialogHeader className="flex flex-col gap-0.5">
+          <DialogTitle>Dodaj pojazd.</DialogTitle>
           <DialogDescription>
             Dodawanie nowego pojazdu do bazy danych.
           </DialogDescription>
-          <Separator className="bg-chart-10" />
-        </div>
+        </DialogHeader>
+        <Separator className="bg-chart-10" />
+
         <AddVehicleForm />
       </DialogContent>
     </Dialog>
@@ -99,7 +98,6 @@ function AddVehicleForm() {
   });
 
   const onSubmit = (data: AddVehicleFormValues) => {
-    // console.log("dane z formularza :", data);
     const finalData: Vehicle = {
       name: data.vehicleBrand,
       types: data.vehicleTypes.map((t) => t.value),
@@ -107,7 +105,7 @@ function AddVehicleForm() {
       id: uuidv4(),
     };
     addVehiceToStore(finalData);
-    form.reset();
+    // form.reset();
     toast.success(
       <span>
         <span>Pojazd </span>

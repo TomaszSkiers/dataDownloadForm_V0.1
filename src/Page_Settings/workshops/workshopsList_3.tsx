@@ -5,6 +5,11 @@ import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
 import { WORKSHOP } from "../../../constants/initialData";
 import React from "react";
+import AddWorkshopDialog_3 from "./addWorkshopDialog";
+
+//todo ==================================================
+//* robię dialog dodaj punkt
+//todo ==================================================
 
 interface WorkshopsListProps {
   workshopsList: WORKSHOP[];
@@ -12,20 +17,23 @@ interface WorkshopsListProps {
 
 export default function WorkshopList_3() {
   const workshopList = useWorkshopStore2((s) => s.workshopList);
-  // const workshopList = []
+
   return (
-    <Card className="flex-1 rounded-md">
-      <CardHeader className="flex items-center justify-between">
-        <CardTitle>
-          <h2>Lista punktów serwisowych</h2>
-        </CardTitle>
-        <AddWorkshop />
-      </CardHeader>
-      <Separator />
-      <CardContent className="relative flex-1">
-        <WorkshopsListMain workshopsList={workshopList} />
-      </CardContent>
-    </Card>
+    <>
+      <Card className="flex-1 rounded-md">
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle>
+            <h2>Lista punktów serwisowych</h2>
+          </CardTitle>
+          <AddWorkshop />
+        </CardHeader>
+        <Separator />
+        <CardContent className="relative flex-1">
+          <WorkshopsListMain workshopsList={workshopList} />
+        </CardContent>
+      </Card>
+      <AddWorkshopDialog_3 />
+    </>
   );
 }
 // =====================================================
@@ -51,11 +59,11 @@ function WorkshopsListMain({ workshopsList }: WorkshopsListProps) {
 // =====================================================
 function WorkshopsMapLoop({ workshopsList }: WorkshopsListProps) {
   return (
-    <ul  className="absolute inset-0 overflow-auto flex flex-col gap-3 p-0 m-0 list-none">
+    <ul className="absolute inset-0 overflow-auto flex flex-col gap-3 p-0 m-0 list-none">
       {workshopsList.map((workshop) => (
         <li key={workshop.id}>
           <WorkshopSingleRow workshop={workshop} />
-        </li> 
+        </li>
       ))}
     </ul>
   );
@@ -102,7 +110,7 @@ const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
             size="sm"
             variant="outline"
             className="dark:bg-background"
-            // onClick={() => setVehicleToEdit(vehicle)}
+            // onClick={() => {onOpenChange(true)}}
           >
             <PenLine className="text-chart-2" />
             Edytuj
@@ -129,11 +137,14 @@ const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
 // Button add workshop
 // =====================================================
 function AddWorkshop() {
+  const onOpenChange = useWorkshopStore2((s) => s.setIsAddWorkshopDialogOpen);
   return (
     <Button
       type="button"
       variant={"outline"}
-      // onClick={openAddDialog}
+      onClick={() => {
+        onOpenChange(true);
+      }}
       className="bg-background dark:bg-background"
     >
       <PlusCircle className="text-chart-2" />
