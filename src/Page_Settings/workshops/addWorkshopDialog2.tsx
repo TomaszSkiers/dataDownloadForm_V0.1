@@ -4,7 +4,7 @@
 import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { WORKSHOP, WORKSHOP_SCHEMA } from "../../../../constants/initialData";
+import { WORKSHOP, WORKSHOP_SCHEMA } from "../../../constants/initialData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuidv4 } from "uuid";
 import {

@@ -1,22 +1,14 @@
 "use client";
-// import TopFormButtons from "@/components/settingsForm_1/topButtons";
-// import SettingsContextContainer from "@/components/settingsForm_1/settingsContextContainer";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useViewStore } from "@/store/useViewStore";
 import { SETTINGS_BUTTONS_LEFT } from "../../../constants/initialData";
-import TechniciansList from "@/components/settingsForm_1/techniciansForms/techniciansList";
-import WorkshopList2 from "@/components/settingsForm_1/WORKSHOP-FORM-2/workshopList2";
-// import VehicleList_4 from "@/components/settingsForm_1/VEHICLES_FORM_2/vehicleList_4";
-import ReasonsList from "@/components/settingsForms/reasons";
-import PowerOff from "@/components/settingsForm_1/power/settingsPowerOff";
+import TechniciansList from "@/Page_Settings/techniciansForms/techniciansList";
+import PowerOff from "@/Page_Settings/power/settingsPowerOff";
+import VehiclesList from "@/Page_Settings/vehiclesForm/vehicleList";
+import ReasonsList_1 from "@/Page_Settings/reasonsForm/reasonList2";
+import WorkshopList_3 from "@/Page_Settings/workshops/workshopsList_3";
 
-import VehicleList_5 from "@/components/settingsForm_1/VEHICLES_FORM_2/vehicleList_5";
-// import TechniciansList from "../settingsForm_1/techniciansForms/techniciansList";
-// import PowerOff from "./power/settingsPowerOff";
-// import WorkshopList2 from "./WORKSHOP-FORM-2/workshopList2";
-// import SimpleVehicleForm from "./reasonsForm/reasonList2";
-// import VehicleList_4 from "./VEHICLES_FORM_2/vehicleList_4";
-// import TopFormsButtons from "@/components/settingsForm_1/topFormButtons";
 
 /**
  * * /settings
@@ -31,15 +23,7 @@ import VehicleList_5 from "@/components/settingsForm_1/VEHICLES_FORM_2/vehicleLi
 // wyłączyć napisy w widoku mobile i niech będą w jednej linii
 //todo ===============================
 
-// export default function Settings() {
-//   return (
-//     <section className="flex flex-1 flex-col gap-5" aria-labelledby="settings-title">
-//       <h1 id="settings-title" className="sr-only">Ustawienia</h1> {/* ukrywam nagłówek */}
-//       <TopFormButtons className="flex gap-2 sm:gap-5 " />
-//       <SettingsContextContainer className=" flex-1 flex" />
-//     </section>
-//   );
-// }
+
 
 export default function Settings() {
   const activeView = useViewStore((s) => s.activeView);
@@ -79,15 +63,15 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="warsztaty" className="flex-1 mt-0 flex">
-          <WorkshopList2 />
+          <WorkshopList_3 />
         </TabsContent>
 
         <TabsContent value="pojazdy" className="flex-1 mt-0 flex">
-          <VehicleList_5 />
+          <VehiclesList />
         </TabsContent>
 
         <TabsContent value="powody" className="flex-1 mt-0">
-          <ReasonsList />
+          <ReasonsList_1 />
         </TabsContent>
 
         <TabsContent value="power" className="flex-1 mt-0 flex">

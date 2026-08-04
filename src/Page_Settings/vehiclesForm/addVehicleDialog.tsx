@@ -36,11 +36,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { bodyType, Vehicle } from "../../../../constants/initialData";
+import { bodyType, Vehicle } from "../../../constants/initialData";
 import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
 import { toast } from "sonner";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
-import { INPUT_CHARS_LIMITER } from "../../../../constants/initialData";
+import { INPUT_CHARS_LIMITER } from "../../../constants/initialData";
 
 const brandMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.brand;
 const typeMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.type;
@@ -49,13 +49,13 @@ const typeMaxLength = INPUT_CHARS_LIMITER.addVehicleDialog.type;
 // main dialog AddVehicleDialog
 // =================================================================
 
-export default function AddVehicleDialog_5() {
+export default function AddVehicleDialog() {
   const open = useVehicleUiStore((state) => state.isAddDialogOpen);
   const onOpenChange = useVehicleUiStore((state) => state.setOpenAddDialog);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent >
+      <DialogContent>
         <div className="flex flex-col gap-0.5">
           <DialogHeader>
             <DialogTitle>Dodaj pojazd v.5</DialogTitle>

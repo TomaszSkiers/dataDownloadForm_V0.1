@@ -11,7 +11,7 @@ import {
   bodyType,
   INPUT_CHARS_LIMITER,
   Vehicle,
-} from "../../../../constants/initialData";
+} from "../../../constants/initialData";
 import {
   Dialog,
   DialogContent,

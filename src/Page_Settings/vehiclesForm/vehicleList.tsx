@@ -1,3 +1,6 @@
+// =====================================================
+// Main -
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -7,46 +10,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useFilteredVehicles } from "@/customHooks/useFilteredVehicles";
-import { useVehicalStorage2 } from "@/store/useVehicleStorage2";
-import { bodyType, Vehicle } from "../../../../constants/initialData";
+import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
+import { bodyType, Vehicle } from "../../../constants/initialData";
 import { Button } from "@/components/ui/button";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { useVehicleUiStore } from "@/store/useVehicleUiStore";
-import { RemoveVehicleDialog_2 } from "./removeVehicleDialog_2";
-import AddVehicleDialog_5 from "./addVehicleDialog_5";
-import { memo } from "react";
-import EditVehicleDialog from "./editVehicleDialog_1";
+import AddVehicleDialog from "./addVehicleDialog";
+import { Separator } from "@/components/ui/separator";
+import React from "react";
+import EditVehicleDialog from "./editVehicleDialog";
+import { RemoveVehicleDialog } from "./removeVehicleDialog";
 
 //todo =================================================
-//* przepisać
+
 //todo =================================================
 
-// =====================================================
-// TYPY DLA PROPSÓW
-// =====================================================
 interface VehiclesListProps {
   vehicles: Vehicle[];
 }
-
-interface VehiclesCounterProps {
-  count: number;
-}
-
 // =====================================================
-// Główny komponent widoku listy pojazdów
+// Main
 // =====================================================
-export default function VehicleList_4() {
-  // Wywołujemy hooka tylko raz, na najwyższym poziomie
+export default function VehiclesList() {
   const vehicles = useFilteredVehicles();
 
   return (
     <>
-      <Card className="flex-1 rounded-md ">
-        <CardHeader className="gap-3">
+      <Card className="flex-1 rounded-md">
+        <CardHeader>
           <CardTitle className="flex gap-0.5">
             <h2>Lista pojazdów:</h2>
-            <VehiclesCounter count={vehicles.length} />
+            <VehicleCounter count={vehicles.length} />
           </CardTitle>
           <div className="flex justify-between">
             <SelectKindOfVehicle />
@@ -55,39 +49,62 @@ export default function VehicleList_4() {
         </CardHeader>
         <Separator />
         <CardContent className="relative flex-1">
-          <VehiclesListStart vehicles={vehicles} />
+          <VehiclesListMain vehicles={vehicles} />
         </CardContent>
       </Card>
-
-      {/* Dialog usuwania pojazdu */}
-      <RemoveVehicleDialog_2 />
-
-      {/* Dialog dodawania nowego pojazdu */}
-      <AddVehicleDialog_5 />
-
-      {/* Dialog edytowania pojazdu */}
+      <AddVehicleDialog />
+      <RemoveVehicleDialog />
       <EditVehicleDialog />
     </>
   );
 }
-
 // =====================================================
-// Pojedyncza karta pojazdu (Semantyczny <article> + <dl>)
+// List of vehicles Wrapper - main
 // =====================================================
-interface VehicleMapRowProps {
-  vehicle: Vehicle;
+function VehiclesListMain({ vehicles }: VehiclesListProps) {
+  if (vehicles.length === 0)
+    return (
+      <div className="absolute inset-0 flex flex-col gap-3 overflow-auto">
+        <div className="mx-auto my-auto text-2xl font-extrabold text-center">
+          Brak danych o pojazdach
+          <br />
+          <span className="text-sm font-normal text-muted-foreground">
+            Kliknij „Dodaj pojazd”, aby utworzyć nowy wpis.
+          </span>
+        </div>
+      </div>
+    );
+  return <VehiclesMapLoop vehicles={vehicles} />;
 }
-
-const VehicleSingleRow = memo(function VehicleSingleRow({
+// =====================================================
+// List of vehicles - .map() - loop
+// =====================================================
+function VehiclesMapLoop({ vehicles }: VehiclesListProps) {
+  return (
+    <ul className="absolute inset-0 overflow-auto flex flex-col gap-3 p-0 m-0 list-none">
+      {vehicles.map((vehicle) => {
+        return (
+          <li key={vehicle.id}>
+            <VehicleSingleRow vehicle={vehicle} />
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+// =====================================================
+// Single card of vehicle
+// =====================================================
+const VehicleSingleRow = React.memo(function VehicleSingleRow({
   vehicle,
-}: VehicleMapRowProps) {
+}: {
+  vehicle: Vehicle;
+}) {
   const setVehicleToDelete = useVehicleUiStore(
     (state) => state.setVehicleToDelete,
   );
-  const openEditDialog = useVehicleUiStore((s) => s.openEditDialog);
-
+  const setVehicleToEdit = useVehicleUiStore((s) => s.setVehicleToEditNull);
   return (
-    // <article> tworzy samodzielny, semantyczny blok dla pojedynczego wpisu
     <article>
       <Card className="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mx-5 bg-background ">
         <div className="flex-1 flex flex-col justify-center">
@@ -128,14 +145,12 @@ const VehicleSingleRow = memo(function VehicleSingleRow({
           </CardContent>
         </div>
 
-        {/* Akcje dla wybranego pojazdu */}
-        {/* dołożyc ikony i przyciski zrobić na outline */}
         <div className="flex flex-col justify-center gap-3 p-4 md:flex-row md:items-center">
           <Button
             size="sm"
             variant="outline"
             className="dark:bg-background"
-            onClick={openEditDialog}
+            onClick={() => setVehicleToEdit(vehicle)}
           >
             <PenLine className="text-chart-2" />
             Edytuj
@@ -145,7 +160,6 @@ const VehicleSingleRow = memo(function VehicleSingleRow({
             size="sm"
             variant="outline"
             onClick={() => {
-              // console.log("Kliknięto usuń dla pojazdu:", vehicle);
               setVehicleToDelete(vehicle);
             }}
             className="dark:bg-background"
@@ -160,55 +174,16 @@ const VehicleSingleRow = memo(function VehicleSingleRow({
 });
 
 // =====================================================
-// Semantyczne mapowanie listy (pętla ul -> li)
-// =====================================================
-function VehiclesListMapWrapper({ vehicles }: VehiclesListProps) {
-  return (
-    // Używamy natywnego znacznika <ul> wyzerowanego z domyślnego stylowania listy
-    <ul className="flex flex-col gap-3 p-0 m-0 list-none">
-      {vehicles.map((vehicle) => (
-        // Każdy element pętli otaczamy znacznikiem <li>
-        <li key={vehicle.id}>
-          <VehicleSingleRow vehicle={vehicle} />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// =====================================================
-// Kontener listy pojazdów (obsługa pustego stanu)
-// =====================================================
-function VehiclesListStart({ vehicles }: VehiclesListProps) {
-  return (
-    <div className="absolute inset-0 flex flex-col gap-3 overflow-auto">
-      {vehicles.length === 0 ? (
-        <div className="mx-auto my-auto text-2xl font-extrabold text-center">
-          Brak danych o pojazdach
-          <br />
-          <span className="text-sm font-normal text-muted-foreground">
-            Kliknij „Dodaj pojazd”, aby utworzyć nowy wpis.
-          </span>
-        </div>
-      ) : (
-        <VehiclesListMapWrapper vehicles={vehicles} />
-      )}
-    </div>
-  );
-}
-
-// =====================================================
-// Przycisk dodawania nowego pojazdu
+// Button - ad vehicle
 // =====================================================
 function AddVehicleButton() {
-  const openAddDialog = useVehicleUiStore((state) => state.openAddDialog);
-
+  const openAddDialog = useVehicleUiStore((s) => s.openAddDialog);
   return (
     <Button
       type="button"
       variant={"outline"}
       onClick={openAddDialog}
-      className="dark:bg-background"
+      className="bg-background dark:bg-background"
     >
       <PlusCircle className="text-chart-2" />
       <span>Dodaj pojazd</span>
@@ -217,31 +192,32 @@ function AddVehicleButton() {
 }
 
 // =====================================================
-// Select filtrujący rodzaj pojazdu
+// Select kind of vehicle
 // =====================================================
 function SelectKindOfVehicle() {
-  const kindOfVehicle = useVehicalStorage2((state) => state.activeSort);
-  const setKindOfVehicle = useVehicalStorage2((state) => state.setActiveSort);
+  const kindOfVehicle = useVehiclesStorage2((state) => state.activeSort);
+  const setKindOfVehicle = useVehiclesStorage2((state) => state.setActiveSort);
 
   return (
     <Select value={kindOfVehicle} onValueChange={setKindOfVehicle}>
-      <SelectTrigger className="dark:bg-background">
-        <SelectValue placeholder="Wybierz kategorię" />
+      <SelectTrigger className="dark:bg-background bg-background">
+        <SelectValue placeholder="wybierz kategorię" />
       </SelectTrigger>
       <SelectContent position={"popper"}>
-        {bodyType.map((type) => (
-          <SelectItem key={type.id} value={type.bodyName}>
-            {type.description}
-          </SelectItem>
-        ))}
+        {bodyType.map((type) => {
+          return (
+            <SelectItem key={type.id} value={type.bodyName}>
+              {type.description}
+            </SelectItem>
+          );
+        })}
       </SelectContent>
     </Select>
   );
 }
-
 // =====================================================
-// Licznik skompresowany w funkcji
+// vehicle counter
 // =====================================================
-function VehiclesCounter({ count }: VehiclesCounterProps) {
+function VehicleCounter({ count }: { count: number }) {
   return <span>{count}</span>;
 }

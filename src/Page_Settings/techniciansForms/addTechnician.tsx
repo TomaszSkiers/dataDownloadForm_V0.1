@@ -13,10 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Technician,
-  TechnicianSchema,
-} from "../../../../constants/initialData";
+import { Technician, TechnicianSchema } from "../../../constants/initialData";
 
 interface TechnicianFormProps {
   initialData?: Technician | null; // Dane do edycji

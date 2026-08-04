@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useForm } from "react-hook-form";
-import { WORKSHOP, WORKSHOP_SCHEMA } from "../../../../constants/initialData";
+import { WORKSHOP, WORKSHOP_SCHEMA } from "../../../constants/initialData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -112,7 +112,7 @@ export default function WorkshopList2() {
           )}
         </div>
       </CardContent>
-      
+
       {open && <AddWorkshopDialog2 open={open} setOpen={setOpen} />}
     </Card>
   );

@@ -11,8 +11,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import React, { useState } from "react";
-import { useForm, useFormState, Control, UseFormRegister, FieldPath, Controller } from "react-hook-form";
-import { Vehicle, vehicleSchema } from "../../../../constants/initialData";
+import {
+  useForm,
+  useFormState,
+  Control,
+  UseFormRegister,
+  FieldPath,
+  Controller,
+} from "react-hook-form";
+import { Vehicle, vehicleSchema } from "../../../constants/initialData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,8 +84,10 @@ function FormForm() {
 
       {/* 3. ODIZOLOWANA SEKCJA TYPÓW */}
       <VehicleTypesSection control={control} register={register} />
-      
-      <Button type="submit" className="w-full">Zapisz Pojazd</Button>
+
+      <Button type="submit" className="w-full">
+        Zapisz Pojazd
+      </Button>
     </form>
   );
 }
@@ -150,29 +159,34 @@ function VehicleTypesSection({ control, register }: TypesSectionProps) {
     <div className="space-y-3 border p-3 rounded-lg bg-slate-50/50">
       <div className="flex items-center justify-between">
         <Label>Typy pojazdu</Label>
-        <Button 
-          type="button" 
-          variant="outline" 
-          size="sm" 
-          onClick={addTypeField} 
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={addTypeField}
         >
           + Dodaj typ
         </Button>
       </div>
 
       {keys.length === 0 && (
-        <p className="text-xs text-muted-foreground text-center py-2">Brak dodanych typów.</p>
+        <p className="text-xs text-muted-foreground text-center py-2">
+          Brak dodanych typów.
+        </p>
       )}
 
       <div className="space-y-2">
         {keys.map((keyId, index) => (
           <div key={keyId} className="flex gap-2 items-center">
             <div className="flex-1">
-              <Input 
+              <Input
                 placeholder={`Typ ${index + 1}`}
-                {...register(`types.${index}` as FieldPath<Vehicle>)} 
+                {...register(`types.${index}` as FieldPath<Vehicle>)}
               />
-              <FormErrorWatcher control={control} name={`types.${index}` as FieldPath<Vehicle>} />
+              <FormErrorWatcher
+                control={control}
+                name={`types.${index}` as FieldPath<Vehicle>}
+              />
             </div>
 
             <Button
@@ -201,17 +215,20 @@ function FormErrorWatcher({ control, name }: FormErrorWatcherProps) {
   const { errors } = useFormState({ control });
 
   const getNestedError = (errorObj: typeof errors, path: string) => {
-    return path.split('.').reduce<Record<string, unknown> | undefined | null>((acc, part) => {
-      if (acc && typeof acc === 'object' && part in acc) {
-        return acc[part] as Record<string, unknown>;
-      }
-      return undefined;
-    }, errorObj as Record<string, unknown>);
+    return path.split(".").reduce<Record<string, unknown> | undefined | null>(
+      (acc, part) => {
+        if (acc && typeof acc === "object" && part in acc) {
+          return acc[part] as Record<string, unknown>;
+        }
+        return undefined;
+      },
+      errorObj as Record<string, unknown>,
+    );
   };
 
   const error = getNestedError(errors, name);
 
-  if (!error || !('message' in error)) return null;
+  if (!error || !("message" in error)) return null;
 
   return (
     <p className="text-sm text-destructive mt-1 animate-in fade-in duration-200">

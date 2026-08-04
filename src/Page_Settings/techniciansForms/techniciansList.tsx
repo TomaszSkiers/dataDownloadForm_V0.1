@@ -3,7 +3,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Technician } from "../../../../constants/initialData";
+import { Technician } from "../../../constants/initialData";
 import { Button } from "@/components/ui/button";
 import { Edit2, PlusCircle, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "../confirmDialog";
@@ -41,7 +41,8 @@ export default function TechniciansList() {
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="px-4">
-              <PlusCircle className=""/> <span className="hidden sm:block">dodaj technika</span>
+              <PlusCircle className="" />{" "}
+              <span className="hidden sm:block">dodaj technika</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="">

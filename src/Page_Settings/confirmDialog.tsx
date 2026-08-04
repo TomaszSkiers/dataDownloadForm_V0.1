@@ -1,3 +1,6 @@
+//todo ==========================================================
+//* wyrzucić po utworzeniu nowej listy techników
+//todo ==========================================================
 import React from "react";
 import {
   AlertDialog,
