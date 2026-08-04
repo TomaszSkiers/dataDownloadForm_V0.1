@@ -378,7 +378,7 @@ export const SETTINGS_BUTTONS_LEFT: SettingsButtons[] = [
   },
   {
     id: "warsztaty",
-    header: "Lista punktów warsztatowych",
+    header: "Lista punktów",
     description: "Adresy i nazwy punktów warsztatowych",
     icon: <Wrench className="text-chart-8" />,
   },
@@ -390,7 +390,7 @@ export const SETTINGS_BUTTONS_LEFT: SettingsButtons[] = [
   },
   {
     id: "powody",
-    header: "Powody pobrania danych",
+    header: "Powody pobrania",
     description: "Lista powodów dla, których dane zostały pobrane",
     icon: <MessageCircleQuestionMark className="text-chart-6" />,
   },

@@ -56,14 +56,14 @@ export default function Settings() {
       <Tabs
         value={activeView}
         onValueChange={setActiveView}
-        className="flex flex-1 flex-col "
+        className="flex flex-1 flex-col"
       >
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-5  gap-1.5 bg-transparent p-0">
+        <TabsList className="flex w-full gap-2 border p-10 dark:bg-card">
           {SETTINGS_BUTTONS_LEFT.map((button) => (
             <TabsTrigger
               key={button.id}
               value={button.id}
-              className="h-25 border rounded-md flex flex-col items-center gap-1 justify-center"
+              className=" border rounded-md flex  items-center gap-1 justify-center flex-1 p-5"
             >
               <span className="">{button.icon}</span>
               <span className="text-center leading-tight whitespace-normal p-1">
@@ -83,7 +83,7 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="pojazdy" className="flex-1 mt-0 flex">
-          <VehicleList_5/>
+          <VehicleList_5 />
         </TabsContent>
 
         <TabsContent value="powody" className="flex-1 mt-0">
