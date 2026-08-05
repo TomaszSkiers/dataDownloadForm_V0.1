@@ -9,55 +9,55 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
-import { useVehicleUiStore } from "@/store/useVehicleUiStore";
-import { Check, X } from "lucide-react";
+import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
+import { X, Check } from "lucide-react";
 import { toast } from "sonner";
 
-export function RemoveVehicleDialog() {
-  const removeVehicle = useVehiclesStorage2((s) => s.removeVehicle);
-  const vehicleToDelete = useVehicleUiStore((s) => s.vehicleToDelete);
-  const closeDeleteDialog = useVehicleUiStore((s) => s.closeDeleteDialog);
+export default function RemoveWorkshopDialog() {
+  const workshopToDelete = useWorkshopStore2((s) => s.workshopToDelete);
+  const closeDeleteDialog = useWorkshopStore2(
+    (s) => s.closeWorkshopDeleteDialog,
+  );
+  const removeWorkshop = useWorkshopStore2((s) => s.deleteWorkshop);
 
   const handleDelete = () => {
-    if (!vehicleToDelete) return;
+    if (!workshopToDelete) return;
 
-    removeVehicle(vehicleToDelete.id);
+    removeWorkshop(workshopToDelete.id);
     toast.success(
-      <span>
-        <span>Pojazd </span>
+      <>
+        <span>Punkt </span>
         <span className="font-semibold text-chart-3">
-          {vehicleToDelete.name}
+          {workshopToDelete.name}
         </span>
         <span> został usunięty.</span>
-      </span>,
+      </>,
     );
     closeDeleteDialog();
   };
-
   return (
     <AlertDialog
-      open={Boolean(vehicleToDelete)}
+      open={Boolean(workshopToDelete)}
       onOpenChange={(open) => !open && closeDeleteDialog()}
     >
       <AlertDialogContent>
         <AlertDialogHeader className="gap-0">
           <AlertDialogTitle>
-            Czy na pewno chcesz usunąć ten pojazd?
+            Czy na pewno chcesz usunąć ten punkt?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Ta operacja jest nieodwracalna. Pojazd zostanie usunięty z bazy
+            Ta operacja jest nieodwracalna. Punkt zostanie usunięty z bazy
             danych.
           </AlertDialogDescription>
           <Separator className="bg-chart-10 mt-2" />
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel autoFocus>
-            <X color="green" />
+            <X className="text-chart-2" />
             <span>Anuluj</span>
           </AlertDialogCancel>
           <AlertDialogAction onClick={handleDelete} variant={"outline"}>
-            <Check color="red" />
+            <Check className="text-chart-5" />
             <span>Potwierdź</span>
           </AlertDialogAction>
         </AlertDialogFooter>

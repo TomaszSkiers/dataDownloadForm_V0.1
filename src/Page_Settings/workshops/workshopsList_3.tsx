@@ -3,9 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
-import { WORKSHOP } from "../../../constants/initialData";
+// import { WORKSHOP } from "../../../constants/initialData";
 import React from "react";
 import AddWorkshopDialog from "./addWorkshopDialog";
+import { WORKSHOP } from "../../../constants/initialData";
+import RemoveWorkshopDialog from "./removeWorkshpDialog";
+import EditWorkshopDialog from "./editWorkshopDialog";
+
 
 //todo ==================================================
 //* to do RemoveWorkshopDialog
@@ -33,6 +37,8 @@ export default function WorkshopList_3() {
         </CardContent>
       </Card>
       <AddWorkshopDialog />
+      <RemoveWorkshopDialog />
+      <EditWorkshopDialog />
     </>
   );
 }
@@ -77,6 +83,10 @@ interface WorkshopSingleRowProps {
 const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
   workshop,
 }: WorkshopSingleRowProps) {
+
+  const setWorkshopToRemove = useWorkshopStore2(s => s.setWorkshopToDelete)
+  const setWorkshopToEdit = useWorkshopStore2(s => s.setIsEditWorkshopDialogOpen)
+
   return (
     <article>
       <Card className="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mx-5 bg-background ">
@@ -110,7 +120,7 @@ const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
             size="sm"
             variant="outline"
             className="dark:bg-background"
-            // onClick={() => {onOpenChange(true)}}
+            onClick={() => {setWorkshopToEdit(workshop)}}
           >
             <PenLine className="text-chart-2" />
             Edytuj
@@ -119,9 +129,9 @@ const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
             type="button"
             size="sm"
             variant="outline"
-            // onClick={() => {
-            //   setVehicleToDelete(vehicle);
-            // }}
+            onClick={() => {
+              setWorkshopToRemove(workshop)
+            }}
             className="dark:bg-background"
           >
             <Trash2 className="text-chart-5" />

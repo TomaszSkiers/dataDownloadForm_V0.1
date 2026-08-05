@@ -40,10 +40,6 @@ import { toast } from "sonner";
 const brandMaxLength = INPUT_CHARS_LIMITER.editVehicleDialog.brand;
 const typeMaxLength = INPUT_CHARS_LIMITER.editVehicleDialog.type;
 
-//todo =============================================================
-//* poprawić literówki w kodzie, przepisać na czysto, podzielić na pliki
-//todo =============================================================
-
 // =================================================================
 // main dialog EditVehicle
 // =================================================================
@@ -57,18 +53,18 @@ export default function EditVehicleDialog() {
       onOpenChange={(open) => !open && closeEditDiolog()}
     >
       <DialogContent>
-        <div className="flex flex-col gap-0.5">
-          <DialogHeader>
-            <DialogTitle>Edycja pojazdu v.1</DialogTitle>
-          </DialogHeader>
+        <DialogHeader className="gap-0">
+          <DialogTitle>Edycja pojazdu.</DialogTitle>
           <DialogDescription>
             Edycja pojazdu{" "}
             <span className="text-chart-5 font-bold">
               {vehicleToEdit?.name}
             </span>
+            .
           </DialogDescription>
           <Separator className="bg-chart-10" />
-        </div>
+        </DialogHeader>
+
         {vehicleToEdit && <EditVehicleForm vehicle={vehicleToEdit} />}
       </DialogContent>
     </Dialog>
@@ -104,31 +100,24 @@ function EditVehicleForm({ vehicle }: EditVehicleProps) {
   });
 
   const onSubmit = (data: EditVehicleTypes) => {
-    try {
-      const finalData: Vehicle = {
-        id: vehicle.id,
-        name: data.vehicleBrand,
-        types: data.vehicleTypes.map((type) => type.value),
-        category: data.vehicleKind,
-      };
+    const finalData: Vehicle = {
+      id: vehicle.id,
+      name: data.vehicleBrand,
+      types: data.vehicleTypes.map((type) => type.value),
+      category: data.vehicleKind,
+    };
 
-      save(vehicle.id, finalData);
+    save(vehicle.id, finalData);
+    form.reset();
+    toast.success(
+      <span>
+        Pojazd{" "}
+        <span className="font-semibold text-chart-3">{data.vehicleBrand}</span>{" "}
+        został zaktualizowany
+      </span>,
+    );
 
-      toast.success(
-        <span>
-          Pojazd{" "}
-          <span className="font-semibold text-chart-3">
-            {data.vehicleBrand}
-          </span>{" "}
-          został zaktualizowany
-        </span>,
-      );
-
-      onSuccess();
-    } catch (error) {
-      console.error("Błąd zapisu pojazdu:", error);
-      toast.error("Nie udało się zapisać pojazdu. Spróbuj ponownie.");
-    }
+    onSuccess();
   };
 
   return (
@@ -148,7 +137,7 @@ function EditVehicleForm({ vehicle }: EditVehicleProps) {
           variant={"outline"}
           disabled={form.formState.isSubmitting}
         >
-          <Save color="green" />
+          <Save className="text-chart-2" />
           <span>zapisz</span>
         </Button>
       </form>
@@ -180,7 +169,7 @@ function VehicleTypesWrapper() {
           variant={"outline"}
           onClick={() => append({ value: "" })}
         >
-          <CirclePlus aria-hidden="true" color="green" />
+          <CirclePlus aria-hidden="true" className="text-chart-2" />
           <span>Dodaj typ</span>
         </Button>
       </div>
@@ -233,7 +222,7 @@ function VehicleRow({ index, onRemove, fieldsLength }: VehicleRowProps) {
           <FieldLabel className="text-xs flex justify-between">
             <span>Typ pojazdu {index + 1}</span>
             <span className="text-muted-foreground text-xs">
-              {field.value.length}/{typeMaxLength}
+              {(field.value ?? "").length}/{typeMaxLength}
             </span>
           </FieldLabel>
           <div className="flex gap-1">
@@ -252,12 +241,11 @@ function VehicleRow({ index, onRemove, fieldsLength }: VehicleRowProps) {
               onClick={() => onRemove(index)}
               disabled={fieldsLength === 1}
             >
-              <Trash2 aria-hidden="true" className="h-4 w-4" />
+              <Trash2 aria-hidden="true" className="h-4 w-4 text-chart-5" />
             </Button>
           </div>
-          {fieldState.invalid && (
-            <FieldError className="text-xs" errors={[fieldState.error]} />
-          )}
+
+          <FieldError className="text-xs" errors={[fieldState.error]} />
         </Field>
       )}
     />
@@ -275,10 +263,13 @@ function VehicleBrandInput() {
       name="vehicleBrand"
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className="gap-1">
-          <FieldLabel htmlFor={field.name} className="flex justify-between">
+          <FieldLabel
+            htmlFor={field.name}
+            className="flex items-center justify-between"
+          >
             <span>Marka pojazdu</span>
             <span className="text-muted-foreground text-xs">
-              {field.value.length}/{brandMaxLength}
+              {(field.value ?? "").length}/{brandMaxLength}
             </span>
           </FieldLabel>
           <Input
@@ -288,7 +279,7 @@ function VehicleBrandInput() {
             placeholder="np: Volvo"
             maxLength={brandMaxLength}
           />
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          <FieldError errors={[fieldState.error]} />
         </Field>
       )}
     />
@@ -324,7 +315,7 @@ function VehicleKindSelect() {
               ))}
             </SelectContent>
           </Select>
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          <FieldError errors={[fieldState.error]} />
         </Field>
       )}
     />

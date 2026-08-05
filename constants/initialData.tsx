@@ -360,7 +360,6 @@ import {
   Power,
 } from "lucide-react";
 
-
 interface SettingsButtons {
   id: string;
   header: string;
@@ -477,7 +476,7 @@ export const techniciansMock: Technician[] = [
 // ===============================================================
 // SCHEMAT OBIEKTU WARSZTAT / OBJECT WORKSHOP SCHEMA
 // ===============================================================
-//todo schemat nie pasuje do tego z formularza
+
 export const WORKSHOP_SCHEMA = z.object({
   id: z.string(),
   name: z
@@ -533,5 +532,9 @@ export const INPUT_CHARS_LIMITER = {
   addWorkshopDialog: {
     workshopName: 50,
     workshopAddress: 100,
-  }
-} as const
+  },
+  editWorkshopDialog: {
+    workshopName: 50,
+    workshopAddress: 100,
+  },
+} as const;

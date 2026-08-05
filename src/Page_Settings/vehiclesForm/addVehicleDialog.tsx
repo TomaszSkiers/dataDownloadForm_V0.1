@@ -61,8 +61,8 @@ export default function AddVehicleDialog() {
           <DialogDescription>
             Dodawanie nowego pojazdu do bazy danych.
           </DialogDescription>
+          <Separator className="bg-chart-10" />
         </DialogHeader>
-        <Separator className="bg-chart-10" />
 
         <AddVehicleForm />
       </DialogContent>
@@ -105,7 +105,6 @@ function AddVehicleForm() {
       id: uuidv4(),
     };
     addVehiceToStore(finalData);
-    // form.reset();
     toast.success(
       <span>
         <span>Pojazd </span>
@@ -113,6 +112,7 @@ function AddVehicleForm() {
         <span> został dodany do bazy danych.</span>
       </span>,
     );
+    form.reset();
     onSuccess();
   };
   return (
@@ -131,7 +131,7 @@ function AddVehicleForm() {
           variant="outline"
           disabled={form.formState.isSubmitting}
         >
-          <Save color="green" />
+          <Save className="text-chart-2" />
           <span>zapisz</span>
         </Button>
       </form>
@@ -311,7 +311,7 @@ const RemoveVehicleTypeButton = React.memo(function RemoveVehicleTypeButton({
       onClick={() => onRemove(index)}
       disabled={fields === 1}
     >
-      <Trash2 aria-hidden="true" className="h-4 w-4" />
+      <Trash2 aria-hidden="true" className="h-4 w-4 text-chart-5" />
     </Button>
   );
 });

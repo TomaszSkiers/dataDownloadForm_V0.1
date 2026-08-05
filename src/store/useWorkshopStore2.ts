@@ -1,25 +1,23 @@
-import { z } from 'zod'
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { idbStorage } from './idbStorage';
 import { create } from 'zustand';
+import { WORKSHOP } from '../../constants/initialData';
 
-export const workshopSchema10 = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(2, 'wymagane minimun 2 znaki').max(20, 'maksymalnie możesz wpisać 20 znaków'),
-  address: z.string().min(2, 'wymagane minimun 2 znaki').max(20, 'maksymalnie możesz wpisać 20 znaków'),
-})
-
-type workshop = z.infer<typeof workshopSchema10>
 
 interface WorkshopState {
-  workshopList: workshop[],
+  workshopList: WORKSHOP[],
   isAddWorkshopDialogOpen: boolean
+  workshopToDelete: WORKSHOP | null
+  workshopToEdit: WORKSHOP | null
 
-  addWorkshop: (workshop: workshop) => void,
+  addWorkshop: (workshop: WORKSHOP) => void,
   deleteWorkshop: (id: string) => void,
-  editWorkshop: (workshop: workshop) => void,
+  editWorkshop: (workshop: WORKSHOP) => void,
   setIsAddWorkshopDialogOpen: (open: boolean) => void,
-
+  setWorkshopToDelete: (workshop: WORKSHOP) => void,
+  closeWorkshopDeleteDialog: () => void,
+  setIsEditWorkshopDialogOpen: (workshop: WORKSHOP) => void,
+  closeWorkshopEditDialog: () => void,
 }
 
 export const useWorkshopStore2 = create<WorkshopState>()(
@@ -27,10 +25,17 @@ export const useWorkshopStore2 = create<WorkshopState>()(
     (set) => ({
       isAddWorkshopDialogOpen: false,
       workshopList: [],
+      workshopToDelete: null,
+      workshopToEdit: null,
+
       addWorkshop: (newWorkshop) => set((state) => ({ workshopList: [...state.workshopList, newWorkshop] })),
       deleteWorkshop: (id) => set((state) => ({ workshopList: state.workshopList.filter((w) => w.id !== id) })),
       editWorkshop: (editedWorkshop) => set((state) => ({ workshopList: state.workshopList.map((workshop) => workshop.id === editedWorkshop.id ? editedWorkshop : workshop) })),
-      setIsAddWorkshopDialogOpen: (open) => set({isAddWorkshopDialogOpen: open})
+      setIsAddWorkshopDialogOpen: (open) => set({ isAddWorkshopDialogOpen: open }),
+      setWorkshopToDelete: (workshop) => set({ workshopToDelete: workshop }),
+      closeWorkshopDeleteDialog: () => set({ workshopToDelete: null }),
+      setIsEditWorkshopDialogOpen: (workshop) => set({workshopToEdit: workshop}),
+      closeWorkshopEditDialog: () => set({workshopToEdit: null}), 
     }),
     {
       name: 'test-workshop-list-10',

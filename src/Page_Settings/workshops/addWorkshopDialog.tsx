@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
 import z from "zod";
-import { INPUT_CHARS_LIMITER } from "../../../constants/initialData";
+import { INPUT_CHARS_LIMITER, WORKSHOP } from "../../../constants/initialData";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,8 @@ export default function AddWorkshopDialog() {
           <DialogDescription>
             Dodawanie nowego punktu warsztatowego do bazy danych
           </DialogDescription>
+          <Separator className="bg-chart-10" />
         </DialogHeader>
-        <Separator className="bg-chart-10" />
 
         <AddWorkshopForm />
       </DialogContent>
@@ -50,11 +50,6 @@ export default function AddWorkshopDialog() {
 // =================================================================
 // main form - schema - rhf - onSubmit
 // =================================================================
-interface Workshop {
-  id: string;
-  name: string;
-  address: string;
-}
 
 const addWorkshopFormSchema = z.object({
   workshopName: z.string().min(1, "* nazwa jest wymagana").max(nameMaxLength),
@@ -77,26 +72,22 @@ function AddWorkshopForm() {
   });
 
   const onSubmit = (data: AddWorkshopFormValues) => {
-    const finalData: Workshop = {
+    const finalData: WORKSHOP = {
       id: uuidv4(),
       name: data.workshopName,
       address: data.workshopAddress,
     };
-    try {
-      addWorkshopToStore(finalData);
-      toast.success(
-        <span>
-          <span>Warsztat </span>
-          <span className="font-semibold text-chart-3">
-            {data.workshopName}
-          </span>
-          <span> został dodany do bazy danych.</span>
-        </span>,
-      );
-      onSuccess(false);
-    } catch {
-      toast.error("Nie udało się dodać warsztatu.");
-    }
+
+    addWorkshopToStore(finalData);
+    toast.success(
+      <>
+        <span>Warsztat </span>
+        <span className="font-semibold text-chart-3">{data.workshopName}</span>
+        <span> został dodany do bazy danych.</span>
+      </>,
+    );
+    form.reset();
+    onSuccess(false);
   };
 
   return (
@@ -114,7 +105,7 @@ function AddWorkshopForm() {
           variant="outline"
           disabled={form.formState.isSubmitting}
         >
-          <Save color="green" />
+          <Save className="text-chart-2" />
           <span>zapisz</span>
         </Button>
       </form>

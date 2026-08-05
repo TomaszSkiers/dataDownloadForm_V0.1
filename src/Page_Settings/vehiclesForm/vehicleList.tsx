@@ -1,6 +1,3 @@
-// =====================================================
-// Main -
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
