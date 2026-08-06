@@ -9,44 +9,45 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import { useVehiclesStorage2 } from "@/store/useVehicleStorage2";
-import { useVehicleUiStore } from "@/store/useVehicleUiStore";
+import { useTechniciansStore } from "@/store/useTechnicianStorage";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 
-export function RemoveVehicleDialog() {
-  const removeVehicle = useVehiclesStorage2((s) => s.removeVehicle);
-  const vehicleToDelete = useVehicleUiStore((s) => s.vehicleToDelete);
-  const closeDeleteDialog = useVehicleUiStore((s) => s.closeDeleteDialog);
+export default function RemoveTechnicianDialog() {
+  const technicianToDelete = useTechniciansStore((s) => s.technicianToDelete);
+  const closeDeleteDialog = useTechniciansStore(
+    (s) => s.closeDeleteTechnicianDialog,
+  );
+  const removeTechnician = useTechniciansStore((s) => s.removeTechnician);
 
   const handleDelete = () => {
-    if (!vehicleToDelete) return;
+    if (!technicianToDelete) return;
 
-    removeVehicle(vehicleToDelete.id);
+    removeTechnician(technicianToDelete.id);
     toast.success(
-      <span>
-        <span>Pojazd </span>
+      <>
+        Technik{" "}
         <span className="font-semibold text-chart-3">
-          {vehicleToDelete.name}
-        </span>
-        <span> został usunięty.</span>
-      </span>,
+          {technicianToDelete.fullName}
+        </span>{" "}
+        został usunięty.
+      </>,
     );
     closeDeleteDialog();
   };
 
   return (
     <AlertDialog
-      open={Boolean(vehicleToDelete)}
+      open={Boolean(technicianToDelete)}
       onOpenChange={(open) => !open && closeDeleteDialog()}
     >
       <AlertDialogContent>
         <AlertDialogHeader className="gap-0">
           <AlertDialogTitle>
-            Czy na pewno chcesz usunąć ten pojazd?
+            Czy na pewno chcesz usunąć tego technika?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Ta operacja jest nieodwracalna. Pojazd zostanie usunięty z bazy
+            Ta operacja jest nieodwracalna. Technik zostanie usunięty z bazy
             danych.
           </AlertDialogDescription>
           <Separator className="bg-chart-10 mt-2" />
@@ -56,7 +57,7 @@ export function RemoveVehicleDialog() {
             <X className="text-chart-2" />
             <span>Anuluj</span>
           </AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} variant={"outline"}>
+          <AlertDialogAction variant={"outline"} onClick={handleDelete}>
             <Check className="text-chart-5" />
             <span>Potwierdź</span>
           </AlertDialogAction>

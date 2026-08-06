@@ -6,13 +6,17 @@ import { idbStorage } from './idbStorage'
 
 interface techniciansState {
   technicianList: Technician[],
+  openAddDialog: boolean;
+  technicianToDelete: Technician | null,
+  setTechnicianToDelete: (technic: Technician) => void,
+  closeDeleteTechnicianDialog: () => void,
   addTechnician: (technician: Technician) => void,
   removeTechnician: (id: string) => void,
   updateTechnician: (technician: Technician) => void,
   setTechnicians: (list: Technician[]) => void,
-  openAddDialog: boolean;
   addDialogOnOpenChange: (open: boolean) => void,
   closeAddTechnicianDialog: () => void,
+
 }
 
 export const useTechniciansStore = create<techniciansState>()(
@@ -21,6 +25,7 @@ export const useTechniciansStore = create<techniciansState>()(
     (set) => ({
       technicianList: [],
       openAddDialog: false,
+      technicianToDelete: null,
 
       addDialogOnOpenChange: (open) => set({ openAddDialog: open }),
 
@@ -42,6 +47,8 @@ export const useTechniciansStore = create<techniciansState>()(
       setTechnicians: (list) => set({ technicianList: list }),
       closeAddTechnicianDialog: () => set({ openAddDialog: false }),
 
+      setTechnicianToDelete: (technic) => set({ technicianToDelete: technic }),
+      closeDeleteTechnicianDialog: () => set({ technicianToDelete: null }),
     }),
     {
       name: 'testowy-magazyn-technikow',

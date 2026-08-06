@@ -6,6 +6,7 @@ import { PenLine, PlusCircle, Trash2 } from "lucide-react";
 import { Technician } from "../../../constants/initialData";
 import React from "react";
 import AddTechnicianDialog from "./addTechnician";
+import RemoveTechnicianDialog from "./removeTechnician";
 
 //todo ===============================================================
 
@@ -31,6 +32,7 @@ export default function TechniciansList() {
         </CardContent>
       </Card>
       <AddTechnicianDialog />
+      <RemoveTechnicianDialog />
     </>
   );
 }
@@ -96,6 +98,9 @@ const TechnicianSingleRow = React.memo(function TechnicianSingleRow({
 }: {
   technician: Technician;
 }) {
+
+  const setTechnicianToDelete = useTechniciansStore(s => s.setTechnicianToDelete)
+
   return (
     <article>
       <Card className="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mx-5 bg-background ">
@@ -138,9 +143,9 @@ const TechnicianSingleRow = React.memo(function TechnicianSingleRow({
             type="button"
             size="sm"
             variant="outline"
-            // onClick={() => {
-            //   setVehicleToDelete(vehicle);
-            // }}
+            onClick={() => {
+              setTechnicianToDelete(technician)
+            }}
             className="dark:bg-background"
           >
             <Trash2 className="text-chart-5" />
