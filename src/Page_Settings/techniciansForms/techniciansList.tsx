@@ -5,11 +5,11 @@ import { useTechniciansStore } from "@/store/useTechnicianStorage";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
 import { Technician } from "../../../constants/initialData";
 import React from "react";
+import AddTechnicianDialog from "./addTechnician";
 
 //todo ===============================================================
 
-//* zrobić od nowa ten komponent
-//* wywalić useWorkshopStorage zostawic tylko useWorkshopStore2 i poprawić jego nazwę
+//* robię addTechnicianDialog
 //todo ===============================================================
 
 // =====================================================
@@ -30,6 +30,7 @@ export default function TechniciansList() {
           <ListMain />{" "}
         </CardContent>
       </Card>
+      <AddTechnicianDialog />
     </>
   );
 }
@@ -72,11 +73,15 @@ function ListMapLoop({ technicians }: ListMapProps) {
 // Add technician Button - header
 // =====================================================
 function AddTechnicianButton() {
+  const openAddDialog = useTechniciansStore((s) => s.addDialogOnOpenChange);
   return (
     <Button
       type="button"
       variant={"outline"}
       className="bg-background dark:bg-background"
+      onClick={() => {
+        openAddDialog(true);
+      }}
     >
       <PlusCircle className="text-chart-2" />
       <span>Dodaj technika</span>

@@ -10,6 +10,9 @@ interface techniciansState {
   removeTechnician: (id: string) => void,
   updateTechnician: (technician: Technician) => void,
   setTechnicians: (list: Technician[]) => void,
+  openAddDialog: boolean;
+  addDialogOnOpenChange: (open: boolean) => void,
+  closeAddTechnicianDialog: () => void,
 }
 
 export const useTechniciansStore = create<techniciansState>()(
@@ -17,8 +20,10 @@ export const useTechniciansStore = create<techniciansState>()(
   persist(
     (set) => ({
       technicianList: [],
+      openAddDialog: false,
 
-      // functions
+      addDialogOnOpenChange: (open) => set({ openAddDialog: open }),
+
       addTechnician: (newTechnician) =>
         set((state) => ({
           technicianList: [...state.technicianList, newTechnician]
@@ -34,7 +39,8 @@ export const useTechniciansStore = create<techniciansState>()(
           technicianList: state.technicianList.map((tech) => tech.id === updTech.id ? updTech : tech)
         })),
 
-      setTechnicians: (list) => set({ technicianList: list })
+      setTechnicians: (list) => set({ technicianList: list }),
+      closeAddTechnicianDialog: () => set({ openAddDialog: false }),
 
     }),
     {

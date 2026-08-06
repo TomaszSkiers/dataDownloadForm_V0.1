@@ -1,142 +1,191 @@
-"use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuidv4 } from "uuid";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Technician, TechnicianSchema } from "../../../constants/initialData";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useTechniciansStore } from "@/store/useTechnicianStorage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
+import z from "zod";
+import {
+  INPUT_CHARS_LIMITER,
+  Technician,
+} from "../../../constants/initialData";
+import { Save } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 
-interface TechnicianFormProps {
-  initialData?: Technician | null; // Dane do edycji
-  onSuccess?: () => void; // Akcja po zapisie
-}
+const techNameMaxLength =
+  INPUT_CHARS_LIMITER.addTechnicianDialog.technicianName;
+const techCardMaxLength =
+  INPUT_CHARS_LIMITER.addTechnicianDialog.technicianCard;
 
-export const TechnicianForm = ({
-  initialData,
-  onSuccess,
-}: TechnicianFormProps) => {
-  const addTechnician = useTechniciansStore((store) => store.addTechnician);
-  const updateTechnician = useTechniciansStore(
-    (store) => store.updateTechnician,
+export default function AddTechnicianDialog() {
+  const open = useTechniciansStore((s) => s.openAddDialog);
+  const onOpenChange = useTechniciansStore((s) => s.addDialogOnOpenChange);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader className="gap-0">
+          <DialogTitle>Dodaj technika.</DialogTitle>
+          <DialogDescription>
+            Dodawanie nowego technika do bazy danych.
+          </DialogDescription>
+          <Separator className="bg-chart-10" />
+        </DialogHeader>
+        <TechnicianForm />
+      </DialogContent>
+    </Dialog>
   );
+}
+// =====================================================
+// Form
+// =====================================================
+const AddTechnicianFormSchema = z.object({
+  technicianName: z
+    .string()
+    .min(1, "* imię i nazwisko jest wymagane")
+    .max(techNameMaxLength),
+  technicianCardNumber: z
+    .string()
+    .min(1, "* numer karty jest wymagany")
+    .max(techCardMaxLength),
+});
 
-  // Tryb edycji aktywuje się, gdy mamy initialData
-  const isEditMode = !!initialData;
+type TechnicianType = z.infer<typeof AddTechnicianFormSchema>;
 
-  const form = useForm<Technician>({
-    resolver: zodResolver(TechnicianSchema),
-    defaultValues: initialData || {
-      id: uuidv4(),
-      fullName: "",
-      cardNumber: "",
+function TechnicianForm() {
+  const addTechnician = useTechniciansStore((s) => s.addTechnician);
+  const onSuccess = useTechniciansStore((s) => s.closeAddTechnicianDialog);
+ 
+
+  const form = useForm<TechnicianType>({
+    resolver: zodResolver(AddTechnicianFormSchema),
+    defaultValues: {
+      technicianName: "",
+      technicianCardNumber: "",
     },
   });
 
-  const onSubmit = (data: Technician) => {
-    if (isEditMode) {
-      updateTechnician(data);
-    } else {
-      addTechnician(data);
-    }
+  const {
+    formState: { isSubmitting },
+  } = form;
 
-    // Jeśli przekazano funkcję sukcesu (np. zamknij modal), wywołaj ją
-    if (onSuccess) {
-      onSuccess();
-    }
-
-    // Jeśli to był nowy wpis, zresetuj formularz dla kolejnego technika
-    if (!isEditMode) {
-      form.reset({
-        id: uuidv4(),
-        fullName: "",
-        cardNumber: "",
-      });
-    }
+  const onSubmit = (data: TechnicianType) => {
+    const finalData: Technician = {
+      id: uuidv4(),
+      fullName: data.technicianName,
+      cardNumber: data.technicianCardNumber,
+    };
+    addTechnician(finalData);
+    form.reset()
+    toast.success(
+      <>
+        Technik{" "}
+        <span className="font-semibold text-chart-3">
+          {data.technicianName}
+        </span>{" "}
+        został dodany do bazy danych.
+      </>,
+    );
+    onSuccess();
   };
 
+
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <h2 className="text-sm text-muted-foreground">
-          {isEditMode ? "Edytujesz dane technika" : "Dodajesz nowego technika"}
-        </h2>
-
-        <FormField
-          control={form.control}
-          name="fullName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Imię i Nazwisko</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="np. Jan Kowalski"
-                  maxLength={30}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="cardNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Numer Karty</FormLabel>
-              <FormControl>
-                <Input placeholder="PLW..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormButtons
-          isEditMode={isEditMode}
-          onSuccess={onSuccess}
-        ></FormButtons>
-      </form>
-    </Form>
-  );
-};
-
-import { memo } from "react";
-import { useTechniciansStore } from "@/store/useTechnicianStorage";
-
-// Teraz opakowujemy w memo
-const FormButtons = memo(
-  ({
-    isEditMode,
-    onSuccess,
-  }: {
-    isEditMode: boolean;
-    onSuccess?: () => void;
-  }) => {
-    return (
-      <div className="flex gap-2 pt-2">
-        <Button type="submit">
-          {isEditMode ? "Zapisz zmiany" : "Dodaj technika"}
+    <FormProvider {...form}>
+      <form
+        className="flex-1 flex flex-col gap-3"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <NameField />
+        <CardNumberField />
+        <Separator className="bg-chart-10" />
+        <Button
+          type="submit"
+          variant={"outline"}
+          size={"sm"}
+          disabled={isSubmitting}
+        >
+          <Save className="text-chart-2" />
+          <span>Dodaj technika</span>
         </Button>
+      </form>
+    </FormProvider>
+  );
+}
+// =====================================================
+// name field
+// =====================================================
+function NameField() {
+  const { control } = useFormContext<TechnicianType>();
 
-        {onSuccess && (
-          <Button type="button" variant="outline" onClick={onSuccess}>
-            Anuluj
-          </Button>
-        )}
-      </div>
-    );
-  },
-);
+  return (
+    <Controller
+      control={control}
+      name="technicianName"
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid} className="gap-1">
+          <FieldLabel htmlFor={field.name} className="flex justify-between">
+            <span>Imię i nazwisko</span>
+            <span className="text-muted-foreground text-xs">
+              {field.value?.length ?? 0}/{techNameMaxLength}
+            </span>
+          </FieldLabel>
+          <Input
+            {...field}
+            id={field.name}
+            aria-invalid={fieldState.invalid}
+            placeholder="np: Jan Kowalski"
+            maxLength={techNameMaxLength}
+          />
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  );
+}
+// =====================================================
+// card field
+// =====================================================
+function CardNumberField() {
+  const { control } = useFormContext<TechnicianType>();
 
-FormButtons.displayName = "FormButtons";
+  return (
+    <Controller
+      control={control}
+      name="technicianCardNumber"
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid} className="gap-1">
+          <FieldLabel htmlFor={field.name} className="flex justify-between">
+            <span>Nr karty warsztatowej</span>
+            <span className="text-muted-foreground text-xs">
+              {field.value?.length ?? 0}/{techCardMaxLength}
+            </span>
+          </FieldLabel>
+          <Input
+            id={field.name}
+            {...field}
+            aria-invalid={fieldState.invalid}
+            placeholder="np: PL00000000001234"
+            maxLength={techCardMaxLength}
+          />
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  );
+}

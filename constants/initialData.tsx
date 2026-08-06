@@ -529,6 +529,7 @@ export const INPUT_CHARS_LIMITER = {
     technicianName: 30,
     technicianCard: 16,
   },
+  
   addWorkshopDialog: {
     workshopName: 50,
     workshopAddress: 100,

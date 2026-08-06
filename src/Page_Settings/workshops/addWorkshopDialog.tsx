@@ -79,6 +79,7 @@ function AddWorkshopForm() {
     };
 
     addWorkshopToStore(finalData);
+    form.reset();
     toast.success(
       <>
         <span>Warsztat </span>
@@ -86,7 +87,6 @@ function AddWorkshopForm() {
         <span> został dodany do bazy danych.</span>
       </>,
     );
-    form.reset();
     onSuccess(false);
   };
 
