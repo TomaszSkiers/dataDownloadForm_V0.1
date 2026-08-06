@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
+import { useWorkshopStore} from "@/store/useWorkshopStore";
 import z from "zod";
 import { INPUT_CHARS_LIMITER, WORKSHOP } from "../../../constants/initialData";
 import {
@@ -26,8 +26,8 @@ const nameMaxLength = INPUT_CHARS_LIMITER.editWorkshopDialog.workshopName;
 const addressMaxLength = INPUT_CHARS_LIMITER.editWorkshopDialog.workshopAddress;
 
 export default function EditWorkshopDialog() {
-  const workshopToEdit = useWorkshopStore2((s) => s.workshopToEdit);
-  const closeDialog = useWorkshopStore2((s) => s.closeWorkshopEditDialog);
+  const workshopToEdit = useWorkshopStore((s) => s.workshopToEdit);
+  const closeDialog = useWorkshopStore((s) => s.closeWorkshopEditDialog);
 
   return (
     <Dialog
@@ -73,8 +73,8 @@ const EditSchema = z.object({
 type EditWorkshopTypes = z.infer<typeof EditSchema>;
 
 function EditWorkshopForm({ workshopObj }: EditFormProps) {
-  const save = useWorkshopStore2((s) => s.editWorkshop);
-  const onSuccess = useWorkshopStore2((s) => s.closeWorkshopEditDialog);
+  const save = useWorkshopStore((s) => s.editWorkshop);
+  const onSuccess = useWorkshopStore((s) => s.closeWorkshopEditDialog);
 
   const form = useForm<EditWorkshopTypes>({
     resolver: zodResolver(EditSchema),

@@ -1,9 +1,3 @@
-/**
- * store do obsługi techników
- */
-
-
-
 import { create } from 'zustand'
 import { Technician, TechnicianSchema } from '../../constants/initialData'
 import { persist, createJSONStorage } from 'zustand/middleware'

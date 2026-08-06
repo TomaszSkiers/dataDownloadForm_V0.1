@@ -20,7 +20,7 @@ interface WorkshopState {
   closeWorkshopEditDialog: () => void,
 }
 
-export const useWorkshopStore2 = create<WorkshopState>()(
+export const useWorkshopStore = create<WorkshopState>()(
   persist(
     (set) => ({
       isAddWorkshopDialogOpen: false,

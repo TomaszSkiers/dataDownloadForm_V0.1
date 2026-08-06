@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
+// import { useWorkshopStore } from "@/store/useWorkshopStore";
 import { PenLine, PlusCircle, Trash2 } from "lucide-react";
 // import { WORKSHOP } from "../../../constants/initialData";
 import React from "react";
@@ -9,6 +9,7 @@ import AddWorkshopDialog from "./addWorkshopDialog";
 import { WORKSHOP } from "../../../constants/initialData";
 import RemoveWorkshopDialog from "./removeWorkshpDialog";
 import EditWorkshopDialog from "./editWorkshopDialog";
+import { useWorkshopStore } from "@/store/useWorkshopStore";
 
 
 //todo ==================================================
@@ -19,8 +20,8 @@ interface WorkshopsListProps {
   workshopsList: WORKSHOP[];
 }
 
-export default function WorkshopList_3() {
-  const workshopList = useWorkshopStore2((s) => s.workshopList);
+export default function WorkshopList() {
+  const workshopList = useWorkshopStore((s) => s.workshopList);
 
   return (
     <>
@@ -84,8 +85,8 @@ const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
   workshop,
 }: WorkshopSingleRowProps) {
 
-  const setWorkshopToRemove = useWorkshopStore2(s => s.setWorkshopToDelete)
-  const setWorkshopToEdit = useWorkshopStore2(s => s.setIsEditWorkshopDialogOpen)
+  const setWorkshopToRemove = useWorkshopStore(s => s.setWorkshopToDelete)
+  const setWorkshopToEdit = useWorkshopStore(s => s.setIsEditWorkshopDialogOpen)
 
   return (
     <article>
@@ -147,7 +148,7 @@ const WorkshopSingleRow = React.memo(function WorkshopSingleRow({
 // Button add workshop
 // =====================================================
 function AddWorkshop() {
-  const onOpenChange = useWorkshopStore2((s) => s.setIsAddWorkshopDialogOpen);
+  const onOpenChange = useWorkshopStore((s) => s.setIsAddWorkshopDialogOpen);
   return (
     <Button
       type="button"

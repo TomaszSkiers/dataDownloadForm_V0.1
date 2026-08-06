@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
+import { useWorkshopStore } from "@/store/useWorkshopStore";
 import z from "zod";
 import { INPUT_CHARS_LIMITER, WORKSHOP } from "../../../constants/initialData";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
@@ -28,8 +28,8 @@ const nameMaxLength = INPUT_CHARS_LIMITER.addWorkshopDialog.workshopName;
 const addressMaxLength = INPUT_CHARS_LIMITER.addWorkshopDialog.workshopAddress;
 
 export default function AddWorkshopDialog() {
-  const open = useWorkshopStore2((s) => s.isAddWorkshopDialogOpen);
-  const onOpenChange = useWorkshopStore2((s) => s.setIsAddWorkshopDialogOpen);
+  const open = useWorkshopStore((s) => s.isAddWorkshopDialogOpen);
+  const onOpenChange = useWorkshopStore((s) => s.setIsAddWorkshopDialogOpen);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,8 +61,8 @@ const addWorkshopFormSchema = z.object({
 type AddWorkshopFormValues = z.infer<typeof addWorkshopFormSchema>;
 
 function AddWorkshopForm() {
-  const addWorkshopToStore = useWorkshopStore2((s) => s.addWorkshop);
-  const onSuccess = useWorkshopStore2((s) => s.setIsAddWorkshopDialogOpen);
+  const addWorkshopToStore = useWorkshopStore((s) => s.addWorkshop);
+  const onSuccess = useWorkshopStore((s) => s.setIsAddWorkshopDialogOpen);
   const form = useForm<AddWorkshopFormValues>({
     resolver: zodResolver(addWorkshopFormSchema),
     defaultValues: {

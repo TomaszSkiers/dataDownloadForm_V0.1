@@ -9,16 +9,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import { useWorkshopStore2 } from "@/store/useWorkshopStore2";
+import { useWorkshopStore } from "@/store/useWorkshopStore";
 import { X, Check } from "lucide-react";
 import { toast } from "sonner";
 
 export default function RemoveWorkshopDialog() {
-  const workshopToDelete = useWorkshopStore2((s) => s.workshopToDelete);
-  const closeDeleteDialog = useWorkshopStore2(
+  const workshopToDelete = useWorkshopStore((s) => s.workshopToDelete);
+  const closeDeleteDialog = useWorkshopStore(
     (s) => s.closeWorkshopDeleteDialog,
   );
-  const removeWorkshop = useWorkshopStore2((s) => s.deleteWorkshop);
+  const removeWorkshop = useWorkshopStore((s) => s.deleteWorkshop);
 
   const handleDelete = () => {
     if (!workshopToDelete) return;

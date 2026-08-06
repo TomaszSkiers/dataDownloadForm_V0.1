@@ -7,7 +7,8 @@ import TechniciansList from "@/Page_Settings/techniciansForms/techniciansList";
 import PowerOff from "@/Page_Settings/power/settingsPowerOff";
 import VehiclesList from "@/Page_Settings/vehiclesForm/vehicleList";
 import ReasonsList_1 from "@/Page_Settings/reasonsForm/reasonList2";
-import WorkshopList_3 from "@/Page_Settings/workshops/workshopsList_3";
+import WorkshopList from "@/Page_Settings/workshops/workshopsList";
+
 
 
 /**
@@ -58,19 +59,19 @@ export default function Settings() {
         </TabsList>
 
         {/* Zawartość zakładek */}
-        <TabsContent value="technicy" className="flex-1 mt-0 ">
+        <TabsContent value="technicy" className="flex-1 mt-0 flex">
           <TechniciansList />
         </TabsContent>
 
         <TabsContent value="warsztaty" className="flex-1 mt-0 flex">
-          <WorkshopList_3 />
+          <WorkshopList/>
         </TabsContent>
 
         <TabsContent value="pojazdy" className="flex-1 mt-0 flex">
           <VehiclesList />
         </TabsContent>
 
-        <TabsContent value="powody" className="flex-1 mt-0">
+        <TabsContent value="powody" className="flex-1 mt-0 flex">
           <ReasonsList_1 />
         </TabsContent>
 
