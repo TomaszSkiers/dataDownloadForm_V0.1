@@ -7,6 +7,7 @@ import { Technician } from "../../../constants/initialData";
 import React from "react";
 import AddTechnicianDialog from "./addTechnician";
 import RemoveTechnicianDialog from "./removeTechnician";
+import EditTechnicianDialog from "./editTechnicianDialog";
 
 //todo ===============================================================
 
@@ -33,6 +34,7 @@ export default function TechniciansList() {
       </Card>
       <AddTechnicianDialog />
       <RemoveTechnicianDialog />
+      <EditTechnicianDialog />
     </>
   );
 }
@@ -98,8 +100,10 @@ const TechnicianSingleRow = React.memo(function TechnicianSingleRow({
 }: {
   technician: Technician;
 }) {
-
-  const setTechnicianToDelete = useTechniciansStore(s => s.setTechnicianToDelete)
+  const setTechnicianToDelete = useTechniciansStore(
+    (s) => s.setTechnicianToDelete,
+  );
+  const setTechnicianToEdit = useTechniciansStore((s) => s.setTechnicianToEdit);
 
   return (
     <article>
@@ -129,22 +133,25 @@ const TechnicianSingleRow = React.memo(function TechnicianSingleRow({
           </CardContent>
         </div>
 
+        {/* button edit */}
         <div className="flex flex-col justify-center gap-3 p-4 md:flex-row md:items-center">
           <Button
             size="sm"
             variant="outline"
             className="dark:bg-background"
-            // onClick={() => setVehicleToEdit(vehicle)}
+            onClick={() => {setTechnicianToEdit(technician)}}
           >
             <PenLine className="text-chart-2" />
             Edytuj
           </Button>
+
+          {/* button delete */}
           <Button
             type="button"
             size="sm"
             variant="outline"
             onClick={() => {
-              setTechnicianToDelete(technician)
+              setTechnicianToDelete(technician);
             }}
             className="dark:bg-background"
           >

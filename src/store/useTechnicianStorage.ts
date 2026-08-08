@@ -8,6 +8,9 @@ interface techniciansState {
   technicianList: Technician[],
   openAddDialog: boolean;
   technicianToDelete: Technician | null,
+  technicianToEdit: Technician | null,
+  closeEditTechnicianDialog: () => void,
+  setTechnicianToEdit: (technic: Technician) => void
   setTechnicianToDelete: (technic: Technician) => void,
   closeDeleteTechnicianDialog: () => void,
   addTechnician: (technician: Technician) => void,
@@ -26,6 +29,11 @@ export const useTechniciansStore = create<techniciansState>()(
       technicianList: [],
       openAddDialog: false,
       technicianToDelete: null,
+      technicianToEdit: null,
+
+      closeEditTechnicianDialog: () => set({ technicianToEdit: null }),
+
+      setTechnicianToEdit: (technic) => set({ technicianToEdit: technic }),
 
       addDialogOnOpenChange: (open) => set({ openAddDialog: open }),
 

@@ -154,9 +154,6 @@ function VehicleTypesWrapper() {
     name: "vehicleTypes",
   });
 
-  //todo
-  console.log("renderuje sie VehicleTypeWrapper");
-
   return (
     <fieldset className="">
       <div className="flex justify-between mb-2">
