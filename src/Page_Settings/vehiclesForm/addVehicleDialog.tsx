@@ -98,6 +98,7 @@ function AddVehicleForm() {
   });
 
   const onSubmit = (data: AddVehicleFormValues) => {
+    if(form.formState.isSubmitSuccessful) return
     const finalData: Vehicle = {
       name: data.vehicleBrand,
       types: data.vehicleTypes.map((t) => t.value),
@@ -112,7 +113,7 @@ function AddVehicleForm() {
         <span> został dodany do bazy danych.</span>
       </span>,
     );
-    form.reset();
+    
     onSuccess();
   };
   return (
@@ -129,7 +130,7 @@ function AddVehicleForm() {
         <Button
           type="submit"
           variant="outline"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitSuccessful}
         >
           <Save className="text-chart-2" />
           <span>zapisz</span>

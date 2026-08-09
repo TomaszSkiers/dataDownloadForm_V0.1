@@ -100,6 +100,8 @@ function EditVehicleForm({ vehicle }: EditVehicleProps) {
   });
 
   const onSubmit = (data: EditVehicleTypes) => {
+    if (form.formState.isSubmitSuccessful) return;
+
     const finalData: Vehicle = {
       id: vehicle.id,
       name: data.vehicleBrand,
@@ -108,7 +110,7 @@ function EditVehicleForm({ vehicle }: EditVehicleProps) {
     };
 
     save(vehicle.id, finalData);
-    form.reset();
+
     toast.success(
       <span>
         Pojazd{" "}
@@ -135,7 +137,7 @@ function EditVehicleForm({ vehicle }: EditVehicleProps) {
         <Button
           type="submit"
           variant={"outline"}
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitSuccessful}
         >
           <Save className="text-chart-2" />
           <span>zapisz</span>

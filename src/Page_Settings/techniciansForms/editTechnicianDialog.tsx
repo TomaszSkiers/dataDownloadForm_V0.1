@@ -1,6 +1,3 @@
-// =================================================================
-// main dialog EditTechnician
-
 import {
   Dialog,
   DialogContent,
@@ -31,6 +28,8 @@ import { toast } from "sonner";
 const maxNameLength = INPUT_CHARS_LIMITER.editTechnicianDialog.technicianName;
 const maxCardName = INPUT_CHARS_LIMITER.editTechnicianDialog.technicianCard;
 
+// =================================================================
+// main dialog EditTechnician
 // =================================================================
 export default function EditTechnicianDialog() {
   const technicianToEdit = useTechniciansStore((s) => s.technicianToEdit);
@@ -65,7 +64,7 @@ export default function EditTechnicianDialog() {
 // =================================================================
 // form
 // =================================================================
-const FormShema = z.object({
+const FormSchema = z.object({
   technicianName: z
     .string()
     .min(1, "* imię i nazwiko jest obowiązkowe")
@@ -75,29 +74,31 @@ const FormShema = z.object({
     .min(1, "* nr karty jest obowiązkowy")
     .max(maxCardName),
 });
-type FormTypes = z.infer<typeof FormShema>;
+type FormTypes = z.infer<typeof FormSchema>;
 
 function EditTechnicianForm({ technicianObj }: { technicianObj: Technician }) {
   const updateTechnician = useTechniciansStore((s) => s.updateTechnician);
-  const closeEditDiolog = useTechniciansStore(
+  const closeEditDialog = useTechniciansStore(
     (s) => s.closeEditTechnicianDialog,
   );
 
   const form = useForm<FormTypes>({
-    resolver: zodResolver(FormShema),
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       technicianName: technicianObj.fullName,
       technicianCard: technicianObj.cardNumber,
     },
   });
 
-  const onSubmit = (data: FormTypes) => {
+  const onSubmit = async (data: FormTypes) => {
+    if (form.formState.isSubmitSuccessful) return;
     const finalData: Technician = {
       id: technicianObj.id,
       fullName: data.technicianName,
       cardNumber: data.technicianCard,
     };
     updateTechnician(finalData);
+
     toast.success(
       <span>
         Technik{" "}
@@ -107,7 +108,7 @@ function EditTechnicianForm({ technicianObj }: { technicianObj: Technician }) {
         został zaktualizowany
       </span>,
     );
-    closeEditDiolog();
+    closeEditDialog();
   };
 
   return (
@@ -121,7 +122,7 @@ function EditTechnicianForm({ technicianObj }: { technicianObj: Technician }) {
         <Button
           type={"submit"}
           variant="outline"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitSuccessful}
         >
           <Save className="text-chart-2" />
           <span>zapisz</span>

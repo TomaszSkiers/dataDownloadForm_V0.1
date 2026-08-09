@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { useWorkshopStore} from "@/store/useWorkshopStore";
+import { useWorkshopStore } from "@/store/useWorkshopStore";
 import z from "zod";
 import { INPUT_CHARS_LIMITER, WORKSHOP } from "../../../constants/initialData";
 import {
@@ -85,13 +85,15 @@ function EditWorkshopForm({ workshopObj }: EditFormProps) {
   });
 
   const onSubmit = (data: EditWorkshopTypes) => {
+    if (form.formState.isSubmitSuccessful) return;
+
     const finalData: WORKSHOP = {
       id: workshopObj.id,
       name: data.workshopName,
       address: data.workshopAddress,
     };
     save(finalData);
-    form.reset();
+
     toast.success(
       <>
         Punkt serwisowy{" "}
@@ -111,7 +113,11 @@ function EditWorkshopForm({ workshopObj }: EditFormProps) {
         <FieldName />
         <FieldAddress />
         <Separator className="bg-chart-10" />
-        <Button type="submit" variant={"outline"}>
+        <Button
+          type="submit"
+          variant={"outline"}
+          disabled={form.formState.isSubmitSuccessful}
+        >
           <Save className="text-chart-2" />
           <span>zapisz</span>
         </Button>

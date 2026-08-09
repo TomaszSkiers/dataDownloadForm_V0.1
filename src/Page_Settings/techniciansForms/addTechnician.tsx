@@ -69,7 +69,6 @@ type TechnicianType = z.infer<typeof AddTechnicianFormSchema>;
 function TechnicianForm() {
   const addTechnician = useTechniciansStore((s) => s.addTechnician);
   const onSuccess = useTechniciansStore((s) => s.closeAddTechnicianDialog);
- 
 
   const form = useForm<TechnicianType>({
     resolver: zodResolver(AddTechnicianFormSchema),
@@ -79,18 +78,15 @@ function TechnicianForm() {
     },
   });
 
-  const {
-    formState: { isSubmitting },
-  } = form;
-
-  const onSubmit = (data: TechnicianType) => {
+  const onSubmit = async (data: TechnicianType) => {
+    if (form.formState.isSubmitSuccessful) return;
     const finalData: Technician = {
       id: uuidv4(),
       fullName: data.technicianName,
       cardNumber: data.technicianCardNumber,
     };
     addTechnician(finalData);
-    form.reset()
+    // form.reset();
     toast.success(
       <>
         Technik{" "}
@@ -102,8 +98,6 @@ function TechnicianForm() {
     );
     onSuccess();
   };
-
-
 
   return (
     <FormProvider {...form}>
@@ -118,7 +112,7 @@ function TechnicianForm() {
           type="submit"
           variant={"outline"}
           size={"sm"}
-          disabled={isSubmitting}
+          disabled={form.formState.isSubmitSuccessful}
         >
           <Save className="text-chart-2" />
           <span>Dodaj technika</span>

@@ -13,10 +13,6 @@ import { useTechniciansStore } from "@/store/useTechnicianStorage";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 
-//todo ======================================================================
-// przeanalizować jeszcze raz ze spokojną głową
-//todo ======================================================================
-
 export default function RemoveTechnicianDialog() {
   const technicianToDelete = useTechniciansStore((s) => s.technicianToDelete);
   const closeDeleteDialog = useTechniciansStore(

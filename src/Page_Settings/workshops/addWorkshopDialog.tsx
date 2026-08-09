@@ -72,6 +72,8 @@ function AddWorkshopForm() {
   });
 
   const onSubmit = (data: AddWorkshopFormValues) => {
+    if (form.formState.isSubmitSuccessful) return;
+
     const finalData: WORKSHOP = {
       id: uuidv4(),
       name: data.workshopName,
@@ -79,7 +81,7 @@ function AddWorkshopForm() {
     };
 
     addWorkshopToStore(finalData);
-    form.reset();
+
     toast.success(
       <>
         <span>Warsztat </span>
@@ -103,7 +105,7 @@ function AddWorkshopForm() {
         <Button
           type="submit"
           variant="outline"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitSuccessful}
         >
           <Save className="text-chart-2" />
           <span>zapisz</span>
