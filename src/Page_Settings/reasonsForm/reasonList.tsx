@@ -1,4 +1,4 @@
-export default function ReasonsList_1() {
+export default function ReasonsList() {
   return (<div>tu będzie lista powodów pobrania DDDdanych z tachografu</div>)
 }
 

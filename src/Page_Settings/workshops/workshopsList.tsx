@@ -11,11 +11,6 @@ import RemoveWorkshopDialog from "./removeWorkshpDialog";
 import EditWorkshopDialog from "./editWorkshopDialog";
 import { useWorkshopStore } from "@/store/useWorkshopStore";
 
-
-//todo ==================================================
-//* to do RemoveWorkshopDialog
-//todo ==================================================
-
 interface WorkshopsListProps {
   workshopsList: WORKSHOP[];
 }

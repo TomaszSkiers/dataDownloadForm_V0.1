@@ -6,7 +6,7 @@ import { SETTINGS_BUTTONS_LEFT } from "../../../constants/initialData";
 import TechniciansList from "@/Page_Settings/techniciansForms/techniciansList";
 import PowerOff from "@/Page_Settings/power/settingsPowerOff";
 import VehiclesList from "@/Page_Settings/vehiclesForm/vehicleList";
-import ReasonsList_1 from "@/Page_Settings/reasonsForm/reasonList2";
+import ReasonsList from "@/Page_Settings/reasonsForm/reasonList";
 import WorkshopList from "@/Page_Settings/workshops/workshopsList";
 
 
@@ -72,7 +72,7 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="powody" className="flex-1 mt-0 flex">
-          <ReasonsList_1 />
+          <ReasonsList />
         </TabsContent>
 
         <TabsContent value="power" className="flex-1 mt-0 flex">
