@@ -8,6 +8,7 @@ import PowerOff from "@/Page_Settings/power/settingsPowerOff";
 import VehiclesList from "@/Page_Settings/vehiclesForm/vehicleList";
 import ReasonsListTab from "@/Page_Settings/reasonsForm/reasonsListTab";
 import WorkshopList from "@/Page_Settings/workshops/workshopsList";
+import TachographBrandList from "@/Page_Settings/tachographsForm/tachographBrandList";
 
 /**
  * * /settings
@@ -75,6 +76,10 @@ export default function Settings() {
 
         <TabsContent value="power" className="flex-1 mt-0 flex">
           <PowerOff />
+        </TabsContent>
+
+        <TabsContent value="tachografy" className="flex-1 mt-0 flex">
+          <TachographBrandList />
         </TabsContent>
       </Tabs>
     </section>

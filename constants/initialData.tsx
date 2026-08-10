@@ -358,6 +358,7 @@ import {
   MessageCircleQuestionMark,
   ClipboardType,
   Power,
+  Gamepad,
 } from "lucide-react";
 
 interface SettingsButtons {
@@ -377,21 +378,27 @@ export const SETTINGS_BUTTONS_LEFT: SettingsButtons[] = [
   },
   {
     id: "warsztaty",
-    header: "Lista punktów",
+    header: "Punkty",
     description: "Adresy i nazwy punktów warsztatowych",
     icon: <Wrench className="text-chart-8" />,
   },
   {
     id: "pojazdy",
-    header: "Lista pojazdów",
+    header: "Pojazdy",
     description: "Nazwy i typy pojazdów",
     icon: <Truck className="text-chart-7" />,
   },
   {
     id: "powody",
-    header: "Powody pobrania",
+    header: "Powody, rodzje danych",
     description: "Lista powodów dla, których dane zostały pobrane",
     icon: <MessageCircleQuestionMark className="text-chart-6" />,
+  },
+  {
+    id: "tachografy",
+    header: "Tachografy",
+    description: "",
+    icon: <Gamepad className="text-chart-3" />,
   },
   {
     id: "power",
@@ -556,5 +563,11 @@ export const INPUT_CHARS_LIMITER = {
   editKindDialog: {
     title: 80,
     description: 120,
+  },
+  addBrandDialog: {
+    name: 60,
+  },
+  editBrandDialog: {
+    name: 60,
   },
 } as const;
