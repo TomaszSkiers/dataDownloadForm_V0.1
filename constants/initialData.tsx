@@ -541,4 +541,20 @@ export const INPUT_CHARS_LIMITER = {
     workshopName: 50,
     workshopAddress: 100,
   },
+  addReasonDialog: {
+    reason: 200,
+    legal_basis: 300,
+  },
+  editReasonDialog: {
+    reason: 200,
+    legal_basis: 300,
+  },
+  addKindDialog: {
+    title: 80,
+    description: 120,
+  },
+  editKindDialog: {
+    title: 80,
+    description: 120,
+  },
 } as const;

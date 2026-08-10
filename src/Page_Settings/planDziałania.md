@@ -24,3 +24,29 @@
 
       # 4. Wysyłasz sklejony w całość moduł na zdalny serwer
       git push origin feature/lista-pojazdów
+
+----------------------------------------------------------------------------------------
+Co będzie w polu powód pobrania danych? 
+
+- powód pobrania danch - to będzie razem z podstawą prawną do wybrania
+- podstawa prawna 
+- okres za jaki dane zostały pobrane - to będzie osobna funkcja w formularzu
+- rodzaj pobieranych danych - to trzeba zaszyć w programie + dodać możliwość dodania czegoś nowego przez użytkownika
+-----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------
+# STRONKA Z WYTŁUMACZENIEM PO CO SĄ JAKIE DANE
+Dodatkowo można zbudować ładne stronki z opisami i instrukcją pobierania danych, 
+np: ładnie wyświetlić informację o tym co to są RODZAJE DANYCH Z TACHOGRAFU CYFROWEGO

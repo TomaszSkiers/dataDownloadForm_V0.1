@@ -6,10 +6,8 @@ import { SETTINGS_BUTTONS_LEFT } from "../../../constants/initialData";
 import TechniciansList from "@/Page_Settings/techniciansForms/techniciansList";
 import PowerOff from "@/Page_Settings/power/settingsPowerOff";
 import VehiclesList from "@/Page_Settings/vehiclesForm/vehicleList";
-import ReasonsList from "@/Page_Settings/reasonsForm/reasonList";
+import ReasonsListTab from "@/Page_Settings/reasonsForm/reasonsListTab";
 import WorkshopList from "@/Page_Settings/workshops/workshopsList";
-
-
 
 /**
  * * /settings
@@ -19,12 +17,11 @@ import WorkshopList from "@/Page_Settings/workshops/workshopsList";
  * APLIKACJI
  */
 
-//todo ===============================
+//todo ===================================================================
 // do poprawki przyciski w widoku mobile
 // wyłączyć napisy w widoku mobile i niech będą w jednej linii
-//todo ===============================
-
-
+// poprawić stylowanie w light-theme
+//todo ===================================================================
 
 export default function Settings() {
   const activeView = useViewStore((s) => s.activeView);
@@ -43,15 +40,16 @@ export default function Settings() {
         onValueChange={setActiveView}
         className="flex flex-1 flex-col"
       >
-        <TabsList className="flex w-full gap-2 border p-10 dark:bg-card">
+        <TabsList className="flex w-full gap-2 dark:bg-background mt-2 sm:mt-0">
           {SETTINGS_BUTTONS_LEFT.map((button) => (
             <TabsTrigger
               key={button.id}
               value={button.id}
-              className=" border rounded-md flex  items-center gap-1 justify-center flex-1 p-5"
+              className="flex items-center gap-1 justify-center flex-1 min-h-10 border border-accent 
+              dark:data-[state=active]:border-chart-2"
             >
               <span className="">{button.icon}</span>
-              <span className="text-center leading-tight whitespace-normal p-1">
+              <span className="hidden sm:inline text-center leading-tight whitespace-normal p-1 ">
                 {button.header}
               </span>
             </TabsTrigger>
@@ -64,15 +62,15 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="warsztaty" className="flex-1 mt-0 flex">
-          <WorkshopList/>
+          <WorkshopList />
         </TabsContent>
 
         <TabsContent value="pojazdy" className="flex-1 mt-0 flex">
           <VehiclesList />
         </TabsContent>
 
-        <TabsContent value="powody" className="flex-1 mt-0 flex">
-          <ReasonsList />
+        <TabsContent value="powody" className="flex-1 mt-0 flex ">
+          <ReasonsListTab />
         </TabsContent>
 
         <TabsContent value="power" className="flex-1 mt-0 flex">

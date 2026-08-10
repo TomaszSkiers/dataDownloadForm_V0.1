@@ -13,6 +13,7 @@ interface vehiclesState2 {
   updateVehicle: (id: string, updatedVehicle: Vehicle) => void;
   
   // === sortowanie =====================
+  
   activeSort: string;
   setActiveSort: (vehicleKind: string) => void,
   sortedVehicles: Vehicle[]
